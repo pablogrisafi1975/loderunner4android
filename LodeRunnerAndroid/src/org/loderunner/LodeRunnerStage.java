@@ -4,10 +4,10 @@ package org.loderunner;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import android.util.Log;
 
@@ -74,9 +74,9 @@ class LodeRunnerStage {
     /** Lode Runner game hero */
     public LodeRunnerHero hero = null;
     /** Lode Runner game vilains. Vector of LodeRunnerVilain elements. */
-    public Vector vilains = null;
+    public List<LodeRunnerVilain> vilains = null;
     /** Lode Runner holes in this stage. */
-    public Vector holes = null;
+    public List<LodeRunnerHole> holes = null;
     /** Current random number generator for the stage */
     public GameRandom random = new GameRandom();
     /** Total number of chests to be collected in this stage */
@@ -89,7 +89,7 @@ class LodeRunnerStage {
     public boolean endCompleted = false;
     /** Stage background pixel image */
     private Image backgroundImage = null;
-    private Vector backgroundTilesToRepaint = null;
+    private List<Integer> backgroundTilesToRepaint = null;
     /** Game canvas using this stage*/
     //private LodeRunnerView canvas = null;
     /** Stage loading state */
@@ -108,7 +108,7 @@ class LodeRunnerStage {
             }
             // If enough memory, use a background image to speed up normal stage rendering
             backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH[SPRITE_NORMAL], STAGE_HEIGHT * SPRITE_HEIGHT[SPRITE_NORMAL]);
-            backgroundTilesToRepaint = new Vector();
+            backgroundTilesToRepaint = new ArrayList<Integer>();
         } catch (Exception e) {
             Log.e(LodeRunnerStage.class.getCanonicalName(), "error inicialization", e);
             throw new Error(e);
@@ -157,7 +157,7 @@ class LodeRunnerStage {
                         case TILE_MONK:
                             LodeRunnerVilain vilain = new LodeRunnerVilain(LodeRunnerStage.this);
                             vilain.moveToTile(i);
-                            vilains.addElement(vilain);
+                            vilains.add(vilain);
                             tile = TILE_VOID;
                             break;
                         // Count number of chests
@@ -168,7 +168,7 @@ class LodeRunnerStage {
                     tiles[i] = tile;
                     // Track tiles to repaint
                     if (backgroundTilesToRepaint != null) {
-                        backgroundTilesToRepaint.addElement(new Integer(i));
+                        backgroundTilesToRepaint.add(i);
                     }
                     // Periodically yield to other threads
                     if (i % STAGE_WIDTH == 0) {
@@ -195,14 +195,14 @@ class LodeRunnerStage {
         // Reset members
         isLoaded = false;
         hero = null;
-        vilains = new Vector();
-        holes = new Vector();
+        vilains = new ArrayList<LodeRunnerVilain>();
+        holes = new ArrayList<LodeRunnerHole>();
         nChests = 0;
         exitEnabled = false;
         endHeroDied = false;
         endCompleted = false;
         if (backgroundTilesToRepaint != null) {
-            backgroundTilesToRepaint.removeAllElements();
+            backgroundTilesToRepaint.clear();
         }
         // Asynchroneously load the stage
         loadingThread = new LoadingThread(binInputStream);
@@ -269,18 +269,17 @@ class LodeRunnerStage {
         tiles[getTileIndex(xTile, yTile)] = type;
         // Background image (if any) is no more up to date
         if (backgroundTilesToRepaint != null) {
-            backgroundTilesToRepaint.addElement(new Integer(getTileIndex(xTile, yTile)));
+            backgroundTilesToRepaint.add(getTileIndex(xTile, yTile));
         }
         // Keep track of digged holes (for delayed refill)
         if (type == TILE_HOLE_EMPTY) {
-            holes.addElement(new LodeRunnerHole(this, xTile, yTile));
+            holes.add(new LodeRunnerHole(this, xTile, yTile));
         }
     }
 
     /** Check if the given tile is occupied by a vilain */
     private boolean isVilainAt(int xTile, int yTile, boolean includeRespawning) {
-        for (Enumeration e = vilains.elements(); e.hasMoreElements();) {
-            LodeRunnerVilain vilain = ((LodeRunnerVilain) e.nextElement());
+        for (LodeRunnerVilain vilain :vilains) {
             if (vilain.xTile == xTile && vilain.yTile == yTile && (includeRespawning || vilain.currentMove != LodeRunnerVilain.MOVE_RESPAWN)) {
                 return true;
             }
@@ -296,11 +295,11 @@ class LodeRunnerStage {
     /** Randomly computes a tile index suitable for respawning a vilain */
     public int computeRandomRespawnPoint() {
         // Compute possible respawn points (not on top row)
-        Vector possiblePoints = new Vector();
+        List<Integer> possiblePoints = new ArrayList<Integer>();
         for (int y = 1; y < STAGE_HEIGHT; y++) {
             for (int x = 0; x < STAGE_WIDTH; x++) {
                 if (getTile(x, y) == TILE_VOID && !isVilainAt(x, y, true)) {
-                    possiblePoints.addElement(new Integer(getTileIndex(x, y)));
+                    possiblePoints.add(getTileIndex(x, y));
                 }
             }
             if (!possiblePoints.isEmpty()) {
@@ -308,7 +307,7 @@ class LodeRunnerStage {
             }
         }
         // Return a random possible position
-        return ((Integer) possiblePoints.elementAt(random.nextInt(possiblePoints.size()))).intValue();
+        return possiblePoints.get(random.nextInt(possiblePoints.size()));
     }
 
     /** Enables the exit for this stage */
@@ -318,7 +317,7 @@ class LodeRunnerStage {
             if (backgroundTilesToRepaint != null) {
                 for (int i = 0; i < STAGE_WIDTH * STAGE_HEIGHT; i++) {
                     if (tiles[i] == TILE_EXIT) {
-                        backgroundTilesToRepaint.addElement(new Integer(i));
+                        backgroundTilesToRepaint.add(i);
                     }
                 }
             }
@@ -347,24 +346,23 @@ class LodeRunnerStage {
         }
         Graphics g = backgroundImage.getGraphics();
         // Loop on every tile that needs repainting
-        for (Enumeration e = backgroundTilesToRepaint.elements(); e.hasMoreElements();) {
-            int tileIndex = ((Integer) e.nextElement()).intValue();
+        for (Integer tileIndex : backgroundTilesToRepaint) {
             int xTile = tileIndex % LodeRunnerStage.STAGE_WIDTH;
             int yTile = tileIndex / LodeRunnerStage.STAGE_WIDTH;
             // Tiles are drawn according to their appearance
             int tileAppearance = getTileAppearance(xTile, yTile);
             sprites[spriteSize].paint(g, spriteMap[tileAppearance], xTile * SPRITE_WIDTH[spriteSize], yTile * SPRITE_HEIGHT[spriteSize]);
         }
-        backgroundTilesToRepaint.removeAllElements();
+        backgroundTilesToRepaint.clear();
     }
 
     /** Render the stage's sprites (hero and vilains) */
     public void paintSprites(Graphics g) {
-        for (Enumeration e = holes.elements(); e.hasMoreElements();) {
-            ((LodeRunnerHole) e.nextElement()).paint(g);
+        for (LodeRunnerHole lodeRunnerHole : holes) {
+        	lodeRunnerHole.paint(g);
         }
-        for (Enumeration e = vilains.elements(); e.hasMoreElements();) {
-            ((LodeRunnerVilain) e.nextElement()).paint(g);
+        for (LodeRunnerVilain lodeRunnerVilain : vilains) {
+        	lodeRunnerVilain.paint(g);
         }
         if (hero != null) {
             hero.paint(g);
