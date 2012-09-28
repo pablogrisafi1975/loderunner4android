@@ -143,13 +143,14 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	private void doDraw(Canvas canvas) {	
 		
-		canvas.drawRGB(127, 255, 127);
-		g.setCanvas(canvas);
+		canvas.drawRGB(0, 0, 0);
+		/*
 		Paint paintBlack = new Paint();
 		paintBlack.setARGB(255, 0, 0, 0);
 		paintBlack.setStyle(Style.STROKE);
 		canvas.drawRect(0, 0, 200, 100, paintBlack );
-		
+		*/
+		g.setCanvas(canvas);
 		stage.paint(g);
 		/*
 		InputStream inputStream = this.context.getResources().openRawResource(R.raw.tiles12x11);
