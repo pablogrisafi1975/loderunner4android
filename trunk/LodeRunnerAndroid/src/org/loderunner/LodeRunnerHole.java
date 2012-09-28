@@ -29,7 +29,7 @@ class LodeRunnerHole {
     /** Fill this hole */
     protected void fill() {
         stage.setTile(xTile, yTile, LodeRunnerStage.TILE_BRICK);
-        stage.holes.removeElement(this);
+        stage.holes.remove(this);
     }
 
     /** Heartbeat for this character */

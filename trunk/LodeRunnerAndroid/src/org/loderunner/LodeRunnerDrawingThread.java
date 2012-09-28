@@ -1,20 +1,11 @@
 package org.loderunner;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.SurfaceHolder;
 
 public class LodeRunnerDrawingThread extends Thread {
@@ -531,9 +522,8 @@ public class LodeRunnerDrawingThread extends Thread {
 		public void run() {
 			// Loop on every vilain
 			if (stage != null && stage.isLoaded) {
-				for (Enumeration e = stage.vilains.elements(); e
-						.hasMoreElements();) {
-					((LodeRunnerVilain) e.nextElement()).heartBeat();
+				for (LodeRunnerVilain lodeRunnerVilain : stage.vilains) {
+					lodeRunnerVilain.heartBeat();
 				}
 			}
 			super.run();
@@ -552,9 +542,8 @@ public class LodeRunnerDrawingThread extends Thread {
 		public void run() {
 			// Loop on every hole
 			if (stage != null && stage.isLoaded) {
-				for (Enumeration e = stage.holes.elements(); e
-						.hasMoreElements();) {
-					((LodeRunnerHole) e.nextElement()).heartBeat();
+				for (LodeRunnerHole lodeRunnerHole : stage.holes) {
+					lodeRunnerHole.heartBeat();
 				}
 			}
 			super.run();
