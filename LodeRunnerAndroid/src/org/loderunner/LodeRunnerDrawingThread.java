@@ -143,7 +143,7 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	private void doDraw(Canvas canvas) {	
 		
-		canvas.drawRGB(0, 0, 0);
+		//canvas.drawRGB(0, 0, 0);
 		/*
 		Paint paintBlack = new Paint();
 		paintBlack.setARGB(255, 0, 0, 0);
