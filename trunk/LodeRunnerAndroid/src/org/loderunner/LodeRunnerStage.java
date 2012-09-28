@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import android.util.Log;
+
 
 /**
  * A Lode Runner stage or level is composed of
@@ -108,7 +110,8 @@ class LodeRunnerStage {
             backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH[SPRITE_NORMAL], STAGE_HEIGHT * SPRITE_HEIGHT[SPRITE_NORMAL]);
             backgroundTilesToRepaint = new Vector();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LodeRunnerStage.class.getCanonicalName(), "error inicialization", e);
+            throw new Error(e);
         }
     }
 

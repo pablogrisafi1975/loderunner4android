@@ -135,33 +135,9 @@ public class LodeRunnerActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		return true;
+		return false;
 	}
-
-	public void onUp(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
-	}
-
-	public void onDown(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
-	}
-
-	public void onLeft(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
-	}
-
-	public void onRigth(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
-	}
-
-	public void onFireLeft(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
-	}
-
-	public void onFireRigth(View view) {
-		LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
-	}
-
+	
 	private int calculateDrawingHeigth(Rect outRect) {
 		int statusBarHeight = outRect.top;
 		// Get the height occupied by the decoration contents

@@ -4,12 +4,18 @@ import java.io.InputStream;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 
 public class Image {
 	private final Bitmap bitmap;
+	private final Graphics graphics;
 
-	public Image(Bitmap bitmap) {
+	private Image(Bitmap bitmap) {
 		this.bitmap = bitmap;
+		this.graphics = new Graphics();
+		if(bitmap.isMutable()){
+			this.graphics.setCanvas(new Canvas(bitmap));
+		}
 	}
 
 	public int getWidth() {
@@ -21,8 +27,7 @@ public class Image {
 	}
 
 	public Graphics getGraphics() {
-		// TODO Auto-generated method stub
-		return null;
+		return graphics;
 	}
 
 	public static Image createImage(InputStream inputStream) {
@@ -30,8 +35,9 @@ public class Image {
 		return new Image(bitmap);
 	}
 	
-	public static Image createImage(int i, int j) {
-		return null;
+	public static Image createImage(int width, int height) {
+		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888 );
+		return new Image(bitmap);
 	}
 
 	public Bitmap getBitmap(int x, int y, int width, int height) {		
