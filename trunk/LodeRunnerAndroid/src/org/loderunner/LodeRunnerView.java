@@ -20,6 +20,7 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 		drawingThread = new LodeRunnerDrawingThread(holder , context, this.getWidth(), this.getHeight());
 		holder.addCallback(this);
 		setFocusable(true);
+
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {

@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -121,6 +122,7 @@ public class LodeRunnerActivity extends Activity {
 	private void addButton(String text, int x, int y, int width, int heigth, OnClickListener onClickListener) {
 		Button menuButton = new Button(this);
 		menuButton.setText(text);
+		menuButton.setFocusable(false);
 		LayoutParams layoutParams = new LayoutParams(width, heigth);
 		layoutParams.leftMargin = x;
 		layoutParams.topMargin = y;
@@ -134,10 +136,40 @@ public class LodeRunnerActivity extends Activity {
 	}
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_W:
+		case KeyEvent.KEYCODE_DPAD_UP:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+			return true;
+		case KeyEvent.KEYCODE_S:
+		case KeyEvent.KEYCODE_DPAD_DOWN:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
+			return true;
+		case KeyEvent.KEYCODE_A:
+		case KeyEvent.KEYCODE_DPAD_LEFT:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+			return true;
+		case KeyEvent.KEYCODE_D:
+		case KeyEvent.KEYCODE_DPAD_RIGHT:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+			return true;
+		case KeyEvent.KEYCODE_Q:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+			return true;
+		case KeyEvent.KEYCODE_E:
+			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return false;
 	}
-	
+
 	private int calculateDrawingHeigth(Rect outRect) {
 		int statusBarHeight = outRect.top;
 		// Get the height occupied by the decoration contents
