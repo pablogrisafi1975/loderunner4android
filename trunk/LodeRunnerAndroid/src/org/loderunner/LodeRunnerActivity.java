@@ -41,16 +41,17 @@ public class LodeRunnerActivity extends Activity {
 
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
 
-				int squareButtonSize = (drawingWidth - LODE_RUNNER_VIEW_WIDTH - MARGIN * 6) / 4;
-				int menuButtonWidth = 2 * squareButtonSize + MARGIN;
+				int squareButtonSize = (drawingHeight - LODE_RUNNER_VIEW_HEIGHT - MARGIN * 3) / 2;
+				Log.d(LodeRunnerActivity.class.getCanonicalName(), "squareButtonSize:" + squareButtonSize);
+				int menuButtonSize = (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2 - 2 * MARGIN;
 				int lastButtonLine = drawingHeight - squareButtonSize - MARGIN;
 
 				LodeRunnerView lodeRunnerView = new LodeRunnerView(LodeRunnerActivity.this.getApplicationContext(),
 						null);
-				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2,
-						(drawingHeight - LODE_RUNNER_VIEW_HEIGHT) / 2, LODE_RUNNER_VIEW_WIDTH, LODE_RUNNER_VIEW_HEIGHT);
+				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
+						LODE_RUNNER_VIEW_HEIGHT);
 
-				addButton("Menu", MARGIN, MARGIN, menuButtonWidth, squareButtonSize, new View.OnClickListener() {
+				addButton("Menu", MARGIN, MARGIN, menuButtonSize, menuButtonSize, new View.OnClickListener() {
 					public void onClick(View v) {
 						onMenu();
 					}
@@ -73,7 +74,7 @@ public class LodeRunnerActivity extends Activity {
 						});
 
 				// up
-				int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH + MARGIN + squareButtonSize) / 2 + MARGIN;
+				int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
 				addButton("\u2191", upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
 						squareButtonSize, new View.OnClickListener() {
 							public void onClick(View v) {
@@ -92,15 +93,15 @@ public class LodeRunnerActivity extends Activity {
 
 				int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
 
-				addButton("\u2190", (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN, leftRighY, squareButtonSize,
+				addButton("\u2190", drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
 						squareButtonSize, new View.OnClickListener() {
 							public void onClick(View v) {
 								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
 							}
 						});
 				// Right
-				addButton("\u2192", (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + 2 * MARGIN + squareButtonSize,
-						leftRighY, squareButtonSize, squareButtonSize, new View.OnClickListener() {
+				addButton("\u2192", drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+						squareButtonSize, new View.OnClickListener() {
 							public void onClick(View v) {
 								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
 							}
