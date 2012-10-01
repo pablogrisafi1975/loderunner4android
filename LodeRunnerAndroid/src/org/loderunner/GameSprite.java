@@ -5,8 +5,6 @@ package org.loderunner;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.graphics.drawable.BitmapDrawable;
-
 /**
  * Visual element that can be rendered with one of the frames stored in an Image.
  * 
@@ -52,20 +50,8 @@ class GameSprite {
         if (x + frameWidth < cx || y + frameHeight < cy || x > cx + cw || y > cy + ch) {
             return false;
         }
-        // MIDP 2.0 implementation
         g.drawRegion(frames, (frameNumber % framesCountX) * frameWidth, (frameNumber / framesCountX) * frameHeight,
                 frameWidth, frameHeight, 0, x, y, Graphics.TOP | Graphics.LEFT);
-        // MIDP 1.0 implementation, for portability
-    /*
-        // Clip to keep only the requested frame
-        g.clipRect(x, y, frameWidth, frameHeight);
-        // Draw the frame
-        x -= (frameNumber % framesCountX) * frameWidth;
-        y -= (frameNumber / framesCountX) * frameHeight;
-        g.drawImage(frames, x, y, Graphics.TOP | Graphics.LEFT);
-        // Restore clip
-        g.setClip(cx, cy, cw, ch);
-         */
         return true;
     }
 
