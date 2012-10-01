@@ -81,6 +81,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	private static LodeRunnerDrawingThread instance;
 
 	public LodeRunnerDrawingThread(SurfaceHolder holder, Context context, int width, int heigth) {
+		instance = this;
 		this.context = context;
 		this.width = width;
 		this.height = heigth;
@@ -92,14 +93,13 @@ public class LodeRunnerDrawingThread extends Thread {
 		InputStream[] tilesInputStreams = new InputStream[]{tilesInputStream0, tilesInputStream1} ;
 		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);
 		stage.loadFromResource(binInputStream);
-		timer = new Timer();
-        
-		timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
+		timer = new Timer();        
+        timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
         // Schedule the vilains' heartBeat
         timer.schedule(new VilainsHeartbeatTask(), 0, VilainsHeartbeatTask.PERIOD);
         // Schedule the stage's heartBeat
         timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);
-        instance = this;		
+        		
 	}
 	
 	public static LodeRunnerDrawingThread getInstance(){
@@ -612,8 +612,27 @@ public class LodeRunnerDrawingThread extends Thread {
 	}
 
 	public void gameAction(int actionCode) {
-		stage.hero.requestMove(actionCode);
-		
+		stage.hero.requestMove(actionCode);		
 	}	
+	
+    public synchronized void pause() {
+        needsRepaint = REPAINT_ALL;
+        isPaused = true;
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }	
+    
+    public synchronized void play() {
+        needsRepaint = REPAINT_ALL;
+        isPaused = false;
+        timer = new Timer();   
+        timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
+        // Schedule the vilains' heartBeat
+        timer.schedule(new VilainsHeartbeatTask(), 0, VilainsHeartbeatTask.PERIOD);
+        // Schedule the stage's heartBeat
+        timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);
+    }	    
 
 }
