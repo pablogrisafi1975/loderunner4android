@@ -6,6 +6,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import android.util.Log;
@@ -194,8 +195,8 @@ class LodeRunnerStage {
         // Reset members
         isLoaded = false;
         hero = null;
-        vilains = new ArrayList<LodeRunnerVilain>();
-        holes = new ArrayList<LodeRunnerHole>();
+        vilains = Collections.synchronizedList (new ArrayList<LodeRunnerVilain>());
+        holes = Collections.synchronizedList (new ArrayList<LodeRunnerHole>());
         nChests = 0;
         exitEnabled = false;
         endHeroDied = false;

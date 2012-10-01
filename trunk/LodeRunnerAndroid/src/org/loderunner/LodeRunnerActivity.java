@@ -1,5 +1,8 @@
 package org.loderunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Rect;
@@ -9,7 +12,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -17,14 +19,26 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class LodeRunnerActivity extends Activity {
 
+	private static final String TEXT_RIGHT = "\u2192";
+	private static final String TEXT_LEFT = "\u2190";
+	private static final String TEXT_DOWN = "\u2193";
+	private static final String TEXT_UP = "\u2191";
+	private static final String TEXT_DIG_RIGTH = "\u2198";
+	private static final String TEXT_DIG_LEFT = "\u2199";
+	private static final String TEXT_MENU = "Menu";
+	private static final String TEXT_PLAY = "Play";
 	private static int LODE_RUNNER_VIEW_WIDTH = 336;
 	private static int LODE_RUNNER_VIEW_HEIGHT = 176;
 	private static int MARGIN = 2;
 	private RelativeLayout relativeLayout;
+	private List<Button> actionButtons;
+	private List<Button> menuButtons;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		actionButtons = new ArrayList<Button>();
+		menuButtons = new ArrayList<Button>();
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
 		this.relativeLayout = new RelativeLayout(this);
@@ -51,61 +65,9 @@ public class LodeRunnerActivity extends Activity {
 				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
 						LODE_RUNNER_VIEW_HEIGHT);
 
-				addButton("Menu", MARGIN, MARGIN, menuButtonSize, menuButtonSize, new View.OnClickListener() {
-					public void onClick(View v) {
-						onMenu();
-					}
-				});
-
-				// dig left
-				addButton("\u2199", MARGIN, lastButtonLine, squareButtonSize, squareButtonSize,
-						new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
-							}
-						});
-
-				// dig rigth
-				addButton("\u2198", 2 * MARGIN + squareButtonSize, lastButtonLine, squareButtonSize, squareButtonSize,
-						new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
-							}
-						});
-
-				// up
-				int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
-				addButton("\u2191", upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
-						squareButtonSize, new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
-							}
-						});
-				// down
-				addButton("\u2193", upDownX, lastButtonLine, squareButtonSize, squareButtonSize,
-						new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
-							}
-						});
-
-				// left
-
-				int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
-
-				addButton("\u2190", drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
-						squareButtonSize, new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
-							}
-						});
-				// Right
-				addButton("\u2192", drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
-						squareButtonSize, new View.OnClickListener() {
-							public void onClick(View v) {
-								LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
-							}
-						});
+				createActionButtons(drawingWidth, squareButtonSize, menuButtonSize, lastButtonLine);
+				
+				createMenuButtons(drawingWidth, squareButtonSize, menuButtonSize, lastButtonLine);
 
 			}
 		});
@@ -120,20 +82,49 @@ public class LodeRunnerActivity extends Activity {
 		relativeLayout.addView(view);
 	}
 
-	private void addButton(String text, int x, int y, int width, int heigth, OnClickListener onClickListener) {
-		Button menuButton = new Button(this);
-		menuButton.setText(text);
-		menuButton.setFocusable(false);
-		LayoutParams layoutParams = new LayoutParams(width, heigth);
+	private void addButton(String text, int x, int y, int size, boolean isActionButton, View.OnClickListener onClickListener) {
+		Button button = new Button(this);
+		button.setText(text);
+		button.setFocusable(false);
+		if (isActionButton) {
+			actionButtons.add(button);
+		} else {
+			button.setVisibility(View.INVISIBLE);
+			menuButtons.add(button);
+		}
+		LayoutParams layoutParams = new LayoutParams(size, size);
 		layoutParams.leftMargin = x;
 		layoutParams.topMargin = y;
-		menuButton.setLayoutParams(layoutParams);
-		menuButton.setOnClickListener(onClickListener);
-		relativeLayout.addView(menuButton);
+		button.setLayoutParams(layoutParams);
+		button.setOnClickListener(onClickListener);
+		relativeLayout.addView(button);
+	}
+	
+	private void onMenu() {
+		if(!LodeRunnerDrawingThread.getInstance().isPaused){
+			LodeRunnerDrawingThread.getInstance().pause();
+			showSomeButtons(true);
+		}
+		
+	}
+	
+	private void onPlay() {	
+		if(LodeRunnerDrawingThread.getInstance().isPaused){
+			showSomeButtons(false);
+			LodeRunnerDrawingThread.getInstance().play();
+		}
+		
 	}
 
-	private void onMenu() {
-		Log.d("menu", "Menu");
+	private void showSomeButtons(boolean showMenuButtons) {
+		int actionButtonsVisibility = !showMenuButtons ? View.VISIBLE :View.INVISIBLE;
+		int menuButtonsVisibility = showMenuButtons ? View.VISIBLE :View.INVISIBLE;
+		for (Button button : actionButtons) {
+			button.setVisibility(actionButtonsVisibility);
+		}
+		for (Button button : menuButtons) {
+			button.setVisibility(menuButtonsVisibility);
+		}		
 	}
 
 	@Override
@@ -161,6 +152,13 @@ public class LodeRunnerActivity extends Activity {
 		case KeyEvent.KEYCODE_E:
 			LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
 			return true;
+		case KeyEvent.KEYCODE_M:
+			onMenu();			
+			return true;
+		case KeyEvent.KEYCODE_P:
+			onPlay();			
+			return true;			
+			
 		}
 		return super.onKeyDown(keyCode, event);
 
@@ -192,5 +190,122 @@ public class LodeRunnerActivity extends Activity {
 		int layoutHeight = screenHeight - (titleBarHeight + statusBarHeight);
 		return layoutHeight;
 	}
+
+	private void createActionButtons(int drawingWidth, int squareButtonSize, int menuButtonSize, int lastButtonLine) {
+		//menu
+		addButton(TEXT_MENU, MARGIN, MARGIN, menuButtonSize, true, new View.OnClickListener() {
+			public void onClick(View v) {
+				onMenu();
+			}		
+		});
+
+		// dig left
+		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, squareButtonSize, true,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+					}
+				});
+
+		// dig right
+		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + squareButtonSize, lastButtonLine, squareButtonSize, true,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+					}
+				});
+
+		// up
+		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
+		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+					}
+				});
+		// down
+		addButton(TEXT_DOWN, upDownX, lastButtonLine, squareButtonSize, true, new View.OnClickListener() {
+			public void onClick(View v) {
+				LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
+			}
+		});
+
+		// left
+
+		int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
+
+		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+					}
+				});
+		// Right
+		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+					}
+				});
+	}
+	
+	private void createMenuButtons(int drawingWidth, int squareButtonSize, int menuButtonSize, int lastButtonLine) {
+		//menu
+		addButton(TEXT_PLAY, MARGIN, MARGIN, menuButtonSize, false, new View.OnClickListener() {
+			public void onClick(View v) {
+				onPlay();
+			}		
+		});
+/*
+		// dig left
+		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, squareButtonSize, true,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+					}
+				});
+
+		// dig right
+		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + squareButtonSize, lastButtonLine, squareButtonSize, true,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+					}
+				});
+
+		// up
+		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
+		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+					}
+				});
+		// down
+		addButton(TEXT_DOWN, upDownX, lastButtonLine, squareButtonSize, true, new View.OnClickListener() {
+			public void onClick(View v) {
+				LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
+			}
+		});
+
+		// left
+
+		int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
+
+		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+					}
+				});
+		// Right
+		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+				true, new View.OnClickListener() {
+					public void onClick(View v) {
+						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+					}
+				});
+				*/
+	}	
 
 }
