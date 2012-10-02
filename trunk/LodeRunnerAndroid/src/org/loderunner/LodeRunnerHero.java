@@ -1,5 +1,7 @@
 package org.loderunner;
 
+import android.util.Log;
+
 /* Copyright � 2006 - Fabien GIGANTE */
 
 
@@ -152,6 +154,7 @@ class LodeRunnerHero extends LodeRunnerCharacter {
 
     /** Kill this hero */
     protected void kill() {
+    	Log.d(LodeRunnerHero.class.getCanonicalName(), "Killed!");
         stage.endHeroDied = true;
     }
 
