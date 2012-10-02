@@ -19,7 +19,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	/** Rendering frequency used by the animation thread */
 	protected final static int FRAMERATE_MILLISEC = 66;
 	/** "In pause" status of the game */
-	protected volatile boolean isPaused = false;
+	protected volatile boolean isPaused = true;
 	/** All game events are scheduled and sequenced by a single Timer thread */
 	protected Timer timer = null;
 
@@ -58,7 +58,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	public int level = 0;
 	/** Current stage, when game is in progress */
 	private LodeRunnerStage stage = null;
-	private int newLevel;
+	
 	private byte[] levelStatuses = new byte[LodeRunnerStage.MAX_LEVELS];
 
 	private static final byte STATUS_DONE = 1;
@@ -94,14 +94,6 @@ public class LodeRunnerDrawingThread extends Thread {
 		InputStream[] tilesInputStreams = new InputStream[]{tilesInputStream0, tilesInputStream1} ;
 		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);
 		stage.loadFromResource(openBinInputStream());
-		
-		timer = new Timer();        
-        timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
-        // Schedule the vilains' heartBeat
-        timer.schedule(new VilainsHeartbeatTask(), 0, VilainsHeartbeatTask.PERIOD);
-        // Schedule the stage's heartBeat
-        timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);        
-        		
 	}
 
 	private InputStream openBinInputStream() {
@@ -363,9 +355,13 @@ public class LodeRunnerDrawingThread extends Thread {
 		paintSoftRight(g, -1, "Fire =>");
 	}
 
-	private void loadNewLevel() {
+	/**
+	 * 
+	 * @param newLevel 0-based level
+	 */
+	public void loadNewLevel(int newLevel) {
 		pauseMessage = null;
-		this.level = newLevel - 1;
+		this.level = newLevel;
 		try {
 			this.stage.loadFromResource(openBinInputStream());
 			updateLevelInfo();
@@ -585,8 +581,7 @@ public class LodeRunnerDrawingThread extends Thread {
 			pauseMessage = "All levels done!";
 		} else {
 			pauseMessage = null;
-			newLevel = nextLevelNotDone + 1;
-			loadNewLevel();
+			loadNewLevel(nextLevelNotDone);
 		}
 	}
 

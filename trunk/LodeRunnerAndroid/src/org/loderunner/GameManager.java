@@ -51,4 +51,41 @@ public class GameManager {
 		lodeRunnerDrawingThread.setLevelChangeListener(levelChangeListener);
 	}
 
+	public void suicide() {
+		lodeRunnerDrawingThread.stageOver(false);		
+	}
+
+	public void clearDone() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void firstLevel() {
+		lodeRunnerDrawingThread.loadNewLevel(0);
+		
+	}
+
+	public void prevLevel() {
+		int newLevel = lodeRunnerDrawingThread.level;
+		newLevel--;
+		if(newLevel < 0){
+			newLevel = 0;
+		}
+		lodeRunnerDrawingThread.loadNewLevel(newLevel);
+	}
+
+	public void nextLevel() {
+		int newLevel = lodeRunnerDrawingThread.level;
+		newLevel++;
+		if(newLevel > LodeRunnerStage.MAX_LEVELS){
+			newLevel = LodeRunnerStage.MAX_LEVELS;
+		}
+		lodeRunnerDrawingThread.loadNewLevel(newLevel);
+		
+	}
+
+	public void unsolvedLevel() {
+		lodeRunnerDrawingThread.nextLevelNotDone();		
+	}
+
 }
