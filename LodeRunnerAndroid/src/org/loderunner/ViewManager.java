@@ -27,6 +27,12 @@ public class ViewManager {
 	private static final String TEXT_DIG_LEFT = "\u2199";
 	private static final String TEXT_MENU = "Menu";
 	private static final String TEXT_PLAY = "Play";
+	private static final String TEXT_SUICIDE = "Suicide";
+	private static final String TEXT_CLEAR_DONE = "Clear\nDone";
+	private static final String TEXT_FIRST = "First";
+	private static final String TEXT_PREV = "Prev.";
+	private static final String TEXT_NEXT = "Next";
+	private static final String TEXT_NEXT_NOT_DONE = "Next not\nDone";
 	private static int LODE_RUNNER_VIEW_WIDTH = 336;
 	private static int LODE_RUNNER_VIEW_HEIGHT = 176;
 	private static int MARGIN = 2;
@@ -89,16 +95,27 @@ public class ViewManager {
 		button.setText(text);
 		button.setFocusable(false);
 		if (isActionButton) {
-			actionButtons.add(button);
-		} else {
 			button.setVisibility(View.INVISIBLE);
+			actionButtons.add(button);
+		} else {			
 			menuButtons.add(button);
 		}
 		button.setOnClickListener(onClickListener);
 		return (Button) addView(button, x, y, size, size);
 	}
 	
-	public void showSomeButtons(boolean showMenuButtons) {
+	public void showMenuWidgets() {
+		showSomeButtons(true);
+		levelTextView.setVisibility(View.INVISIBLE);
+		
+	}	
+	
+	public void showActionWidgets() {
+		showSomeButtons(false);
+		levelTextView.setVisibility(View.VISIBLE);
+	}	
+	
+	private void showSomeButtons(boolean showMenuButtons) {
 		int actionButtonsVisibility = !showMenuButtons ? View.VISIBLE :View.INVISIBLE;
 		int menuButtonsVisibility = showMenuButtons ? View.VISIBLE :View.INVISIBLE;
 		for (Button button : actionButtons) {
@@ -189,6 +206,7 @@ public class ViewManager {
 				});
 		//level info	
 		levelTextView.setText("level?");
+		levelTextView.setVisibility(View.INVISIBLE);
 		addView(levelTextView, (drawingWidth - menuButtonSize) / 2, leftRighY, menuButtonSize, squareButtonSize);
 		gameManager.setLevelChangeListener(new LevelChangeListener() {
 			@Override
@@ -214,60 +232,57 @@ public class ViewManager {
 				lodeRunnerActivity.onPlay();
 			}		
 		});
-/*
-		// dig left
-		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, squareButtonSize, true,
+
+		// suicide
+		addButton(TEXT_SUICIDE, drawingWidth - MARGIN - menuButtonSize, MARGIN, menuButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+						gameManager.suicide();
 					}
 				});
-
-		// dig right
-		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + squareButtonSize, lastButtonLine, squareButtonSize, true,
+		
+		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - menuButtonSize, MARGIN * 2 + menuButtonSize, menuButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+						gameManager.clearDone();
 					}
-				});
-
-		// up
-		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
-		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
-				true, new View.OnClickListener() {
+				});		
+		
+		int afterViewY = LODE_RUNNER_VIEW_HEIGHT + MARGIN;
+		
+		addButton(TEXT_FIRST, (drawingWidth - menuButtonSize)/2 - 2 * (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
+				new View.OnClickListener() {
 					public void onClick(View v) {
-						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+						gameManager.firstLevel();
 					}
-				});
-		// down
-		addButton(TEXT_DOWN, upDownX, lastButtonLine, squareButtonSize, true, new View.OnClickListener() {
-			public void onClick(View v) {
-				LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
-			}
-		});
-
-		// left
-
-		int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
-
-		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
-				true, new View.OnClickListener() {
+				});		
+		addButton(TEXT_PREV, (drawingWidth - menuButtonSize)/2 - (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
+				new View.OnClickListener() {
 					public void onClick(View v) {
-						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+						gameManager.prevLevel();
 					}
-				});
-		// Right
-		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
-				true, new View.OnClickListener() {
+				});		
+		
+		addButton(TEXT_NEXT, (drawingWidth + menuButtonSize )/2 + MARGIN, afterViewY, menuButtonSize, false,
+				new View.OnClickListener() {
 					public void onClick(View v) {
-						LodeRunnerDrawingThread.getInstance().gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+						gameManager.nextLevel();
 					}
-				});
-				*/
+				});		
+		
+		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + menuButtonSize )/2 + 2 * MARGIN + menuButtonSize , afterViewY, menuButtonSize, false,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						gameManager.unsolvedLevel();
+					}
+				});			
+
 	}
 
 	public TextView getLevelTextView() {
 		return levelTextView;
-	}		
+	}
+
+	
 
 }

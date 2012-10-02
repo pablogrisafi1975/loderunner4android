@@ -40,11 +40,11 @@ public class LodeRunnerActivity extends Activity {
 	
 	public void onMenu() {
 		gameManager.pause();
-		viewManager.showSomeButtons(true);
+		viewManager.showMenuWidgets();
 	}
 	
 	public void onPlay() {	
-		viewManager.showSomeButtons(false);
+		viewManager.showActionWidgets();
 		gameManager.play();
 	}
 
