@@ -4,6 +4,7 @@ package org.loderunner;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,14 +109,14 @@ class LodeRunnerStage {
             }
             // If enough memory, use a background image to speed up normal stage rendering
             backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH[SPRITE_NORMAL], STAGE_HEIGHT * SPRITE_HEIGHT[SPRITE_NORMAL]);
-            backgroundTilesToRepaint = new ArrayList<Integer>();
+            backgroundTilesToRepaint = Collections.synchronizedList(new ArrayList<Integer>());
         } catch (Exception e) {
             Log.e(LodeRunnerStage.class.getCanonicalName(), "error inicialization", e);
             throw new Error(e);
         }
     }
 
-    /** Loading thread for asynchroneous stage building */
+    /** Loading thread for asynchronous stage building */
     private class LoadingThread extends Thread {
 
         public LoadingThread(InputStream inputStreamBin) {
@@ -124,7 +125,7 @@ class LodeRunnerStage {
 
 		private final InputStream inputStreamBin;
 
-		/** Entry point of this asynchroneous loading thread */
+		/** Entry point of this asynchronous loading thread */
         public void run() {
             try {
                 // In the original Apple II version, the levels can be found at offset 0x3000-0xc600
@@ -134,7 +135,7 @@ class LodeRunnerStage {
                 // Each tile is encoded on 4 bits
                 DataInput input = new DataInputStream(inputStreamBin);
                 // Read level's buffer
-                int level = 0;// canvas.level % MAX_LEVELS;
+                int level = LodeRunnerDrawingThread.getInstance().level % MAX_LEVELS;//  canvas.level % MAX_LEVELS;
                 byte[] buffer = new byte[STAGE_WIDTH * STAGE_HEIGHT / 2];
                 input.skipBytes(buffer.length * level);
                 input.readFully(buffer);
@@ -180,9 +181,16 @@ class LodeRunnerStage {
                 isLoaded = true;
             } catch (Exception e) {
                 e.printStackTrace();
-            } //  IOException, InterruptedException
+            } finally{
+            	try {
+					inputStreamBin.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+            }
             loadingThread = null;
             //canvas.needsRepaint = LodeRunnerDrawingThread.REPAINT_ALL;
+            LodeRunnerDrawingThread.getInstance().needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;
         }
     }
 
@@ -346,7 +354,7 @@ class LodeRunnerStage {
         }
         Graphics g = backgroundImage.getGraphics();
         // Loop on every tile that needs repainting
-        for (Integer tileIndex : backgroundTilesToRepaint) {
+        for (Integer tileIndex : backgroundTilesToRepaint.toArray(new Integer[backgroundTilesToRepaint.size()])) {
             int xTile = tileIndex % LodeRunnerStage.STAGE_WIDTH;
             int yTile = tileIndex / LodeRunnerStage.STAGE_WIDTH;
             // Tiles are drawn according to their appearance
