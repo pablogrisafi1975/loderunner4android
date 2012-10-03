@@ -6,12 +6,14 @@ import java.util.List;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 public class ViewManager {
 
@@ -63,18 +65,20 @@ public class ViewManager {
 
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
 
-				int squareButtonSize = (drawingHeight - LODE_RUNNER_VIEW_HEIGHT - MARGIN * 3) / 2;
-				Log.d(LodeRunnerActivity.class.getCanonicalName(), "squareButtonSize:" + squareButtonSize);
-				int menuButtonSize = (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2 - 2 * MARGIN;
-				int lastButtonLine = drawingHeight - squareButtonSize - MARGIN;
+				int smallButtonSize = (drawingHeight - LODE_RUNNER_VIEW_HEIGHT - MARGIN * 3) / 2;
+				Log.d(LodeRunnerActivity.class.getCanonicalName(), "squareButtonSize:" + smallButtonSize);
+				int bigButtonSize = (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2 - 2 * MARGIN;
+				int lastButtonLine = drawingHeight - smallButtonSize - MARGIN;
 
 
 				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
 						LODE_RUNNER_VIEW_HEIGHT);
 
-				createActionWidgets(drawingWidth, squareButtonSize, menuButtonSize, lastButtonLine);
+				createActionWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
 				
-				createMenuWidgets(drawingWidth, squareButtonSize, menuButtonSize, lastButtonLine);
+				createMenuWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
+				
+				gameManager.updateLevelInfo();
 				
 
 			};
@@ -106,13 +110,11 @@ public class ViewManager {
 	
 	public void showMenuWidgets() {
 		showSomeButtons(true);
-		levelTextView.setVisibility(View.INVISIBLE);
 		
 	}	
 	
 	public void showActionWidgets() {
 		showSomeButtons(false);
-		levelTextView.setVisibility(View.VISIBLE);
 	}	
 	
 	private void showSomeButtons(boolean showMenuButtons) {
@@ -148,16 +150,16 @@ public class ViewManager {
 		return layoutHeight;
 	}
 
-	private void createActionWidgets(int drawingWidth, int squareButtonSize, int menuButtonSize, int lastButtonLine) {
+	private void createActionWidgets(int drawingWidth, int smallButtonSize, int bigButtonSize, int lastButtonLine) {
 		//menu
-		addButton(TEXT_MENU, MARGIN, MARGIN, menuButtonSize, true, new View.OnClickListener() {
+		addButton(TEXT_MENU, MARGIN, MARGIN, bigButtonSize, true, new View.OnClickListener() {
 			public void onClick(View v) {
 				lodeRunnerActivity.onMenu();
 			}		
 		});
 
 		// dig left
-		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, squareButtonSize, true,
+		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, smallButtonSize, true,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.digLeft();
@@ -165,7 +167,7 @@ public class ViewManager {
 				});
 
 		// dig right
-		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + squareButtonSize, lastButtonLine, squareButtonSize, true,
+		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + smallButtonSize, lastButtonLine, smallButtonSize, true,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.digRight();
@@ -174,14 +176,14 @@ public class ViewManager {
 
 		// up
 		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
-		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * squareButtonSize, squareButtonSize,
+		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * smallButtonSize, smallButtonSize,
 				true, new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.up();
 					}
 				});
 		// down
-		addButton(TEXT_DOWN, upDownX, lastButtonLine, squareButtonSize, true, new View.OnClickListener() {
+		addButton(TEXT_DOWN, upDownX, lastButtonLine, smallButtonSize, true, new View.OnClickListener() {
 			public void onClick(View v) {
 				gameManager.down();
 			}
@@ -189,16 +191,16 @@ public class ViewManager {
 
 		// left
 
-		int leftRighY = lastButtonLine - MARGIN - squareButtonSize;
+		int leftRighY = lastButtonLine - MARGIN - smallButtonSize;
 
-		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + smallButtonSize), leftRighY, smallButtonSize,
 				true, new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.left();
 					}
 				});
 		// Right
-		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + squareButtonSize), leftRighY, squareButtonSize,
+		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + smallButtonSize), leftRighY, smallButtonSize,
 				true, new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.right();
@@ -206,8 +208,7 @@ public class ViewManager {
 				});
 		//level info	
 		levelTextView.setText("level?");
-		levelTextView.setVisibility(View.INVISIBLE);
-		addView(levelTextView, (drawingWidth - menuButtonSize) / 2, leftRighY, menuButtonSize, squareButtonSize);
+		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize);
 		gameManager.setLevelChangeListener(new LevelChangeListener() {
 			@Override
 			public void levelChanged(final String levelInfo) {
@@ -263,21 +264,59 @@ public class ViewManager {
 					}
 				});		
 		
-		addButton(TEXT_NEXT, (drawingWidth + menuButtonSize )/2 + MARGIN, afterViewY, menuButtonSize, false,
+		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + menuButtonSize )/2 + MARGIN, afterViewY, menuButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.nextLevel();
 					}
-				});		
+				});	
+		
+		
+		
+		nextButton.setLongClickable(true);
+		nextButton.setOnLongClickListener(new View.OnLongClickListener() {			
+			public boolean onLongClick(View view) {
+				gameManager.skip10Levels();
+				if(nextButton.isPressed() && nextButton.isClickable()){
+					reClickStart(nextButton);
+				}
+				return true;
+			}
+		});
+		
 		
 		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + menuButtonSize )/2 + 2 * MARGIN + menuButtonSize , afterViewY, menuButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.unsolvedLevel();
 					}
-				});			
+				});
 
 	}
+	
+
+	
+	
+	private void reClickStart(final Button button){
+		Thread t = new Thread(new Runnable() {			
+			public void run() {
+				button.setClickable(false);
+				while(button.isPressed()){
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}					
+					if(button.isPressed()){
+						button.performLongClick();
+					}
+				}
+				button.setClickable(true);
+			}
+		});
+		t.start();
+	}
+
 
 	public TextView getLevelTextView() {
 		return levelTextView;

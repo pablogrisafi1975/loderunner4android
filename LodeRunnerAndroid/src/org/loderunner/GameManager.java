@@ -66,26 +66,41 @@ public class GameManager {
 	}
 
 	public void prevLevel() {
-		int newLevel = lodeRunnerDrawingThread.level;
-		newLevel--;
-		if(newLevel < 0){
-			newLevel = 0;
-		}
-		lodeRunnerDrawingThread.loadNewLevel(newLevel);
+		advanceLevel(-1);			
 	}
 
 	public void nextLevel() {
-		int newLevel = lodeRunnerDrawingThread.level;
-		newLevel++;
-		if(newLevel > LodeRunnerStage.MAX_LEVELS){
-			newLevel = LodeRunnerStage.MAX_LEVELS;
+		advanceLevel(1);			
+	}
+	
+	public void skip10Levels(){
+		advanceLevel(10);			
+	}
+	
+	public void back10Levels(){
+		advanceLevel(-10);			
+	}
+		
+	
+	private void advanceLevel(int levelsToMove){
+		int newLevel = lodeRunnerDrawingThread.level + levelsToMove;
+		if(newLevel >= LodeRunnerStage.MAX_LEVELS){
+			newLevel = LodeRunnerStage.MAX_LEVELS - 1;
 		}
-		lodeRunnerDrawingThread.loadNewLevel(newLevel);
+		if(newLevel < 0){
+			newLevel = 0;
+		}		
+		lodeRunnerDrawingThread.loadNewLevel(newLevel);		
 		
 	}
 
 	public void unsolvedLevel() {
 		lodeRunnerDrawingThread.nextLevelNotDone();		
+	}
+
+	public void updateLevelInfo() {
+		lodeRunnerDrawingThread.updateLevelInfo();
+		
 	}
 
 }

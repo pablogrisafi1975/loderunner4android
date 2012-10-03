@@ -190,7 +190,7 @@ class LodeRunnerStage {
             }
             loadingThread = null;
             //canvas.needsRepaint = LodeRunnerDrawingThread.REPAINT_ALL;
-            LodeRunnerDrawingThread.getInstance().needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;
+            LodeRunnerDrawingThread.getInstance().needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;            
         }
     }
 

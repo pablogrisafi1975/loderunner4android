@@ -343,7 +343,7 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	}
 	
-	private void updateLevelInfo(){
+	public void updateLevelInfo(){
 		String levelInfo = "Level: " + format3(level + 1);
 		if(this.levelChangeListener != null){
 			this.levelChangeListener.levelChanged(levelInfo);
