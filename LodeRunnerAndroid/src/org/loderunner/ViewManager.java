@@ -8,6 +8,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import android.widget.Button;
@@ -257,12 +258,19 @@ public class ViewManager {
 						gameManager.firstLevel();
 					}
 				});		
-		addButton(TEXT_PREV, (drawingWidth - menuButtonSize)/2 - (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
+		Button prevButton = addButton(TEXT_PREV, (drawingWidth - menuButtonSize)/2 - (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.prevLevel();
 					}
 				});		
+		
+		makeRepeatingButton(prevButton,  new View.OnLongClickListener() {			
+			public boolean onLongClick(View view) {
+				gameManager.back10Levels();
+				return true;
+			}
+		});		
 		
 		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + menuButtonSize )/2 + MARGIN, afterViewY, menuButtonSize, false,
 				new View.OnClickListener() {
@@ -273,13 +281,9 @@ public class ViewManager {
 		
 		
 		
-		nextButton.setLongClickable(true);
-		nextButton.setOnLongClickListener(new View.OnLongClickListener() {			
+		makeRepeatingButton(nextButton,  new View.OnLongClickListener() {			
 			public boolean onLongClick(View view) {
 				gameManager.skip10Levels();
-				if(nextButton.isPressed() && nextButton.isClickable()){
-					reClickStart(nextButton);
-				}
 				return true;
 			}
 		});
@@ -292,6 +296,24 @@ public class ViewManager {
 					}
 				});
 
+	}
+
+	//horrible hack to create a repeating button class
+	//too lazy to create a class
+	//I suck
+	
+	private void makeRepeatingButton(final Button button, final OnLongClickListener longClickListener) {
+		button.setLongClickable(true);
+		View.OnLongClickListener filteredLongClickListener = new View.OnLongClickListener() {			
+			public boolean onLongClick(View view) {
+				longClickListener.onLongClick(view);
+				if(button.isPressed() && button.isClickable()){
+					reClickStart(button);
+				}
+				return true;
+			}
+		};
+		button.setOnLongClickListener(filteredLongClickListener);
 	}
 	
 
