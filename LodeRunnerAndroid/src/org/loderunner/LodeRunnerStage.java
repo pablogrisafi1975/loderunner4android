@@ -97,6 +97,7 @@ class LodeRunnerStage {
     public boolean isLoaded = false;
     /** Stage loading is done in a separated thread */
     private Thread loadingThread = null;
+	private LevelInfoChangedListener levelInfoChangedListener;
 
     /** Initiatialize an empty stage. Load the sprites resources. */
     LodeRunnerStage(InputStream fontInputStream, InputStream[] tilesInputStreams) {
@@ -111,7 +112,7 @@ class LodeRunnerStage {
             backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH[SPRITE_NORMAL], STAGE_HEIGHT * SPRITE_HEIGHT[SPRITE_NORMAL]);
             backgroundTilesToRepaint = Collections.synchronizedList(new ArrayList<Integer>());
         } catch (Exception e) {
-            Log.e(LodeRunnerStage.class.getCanonicalName(), "error inicialization", e);
+            Log.e(LodeRunnerStage.class.getCanonicalName(), "Inicialization error", e);
             throw new Error(e);
         }
     }
@@ -214,7 +215,8 @@ class LodeRunnerStage {
         }
         // Asynchroneously load the stage
         loadingThread = new LoadingThread(binInputStream);
-        loadingThread.start();
+        //loadingThread.start();
+        loadingThread.run();
     }
 
     /** Get tile array index from x and y position of the tile. */
@@ -449,4 +451,17 @@ class LodeRunnerStage {
         // Revert translation
         g.translate(-g.getTranslateX(), -g.getTranslateY());
     }
+
+	public void setLevelInfoChangedListener(LevelInfoChangedListener levelInfoChangedListener) {
+		this.levelInfoChangedListener = levelInfoChangedListener;		
+	}
+
+	public void updateLevelInfo() {
+		if(this.levelInfoChangedListener != null){
+			LevelInfo levelInfo = new LevelInfo();
+			//this fires the listener in drawing thread who collects the actual info
+			this.levelInfoChangedListener.levelInfoChanged(levelInfo);
+		}
+		
+	}
 }

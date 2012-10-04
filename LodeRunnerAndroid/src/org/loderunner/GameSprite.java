@@ -5,6 +5,10 @@ package org.loderunner;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 /**
  * Visual element that can be rendered with one of the frames stored in an Image.
  * 
@@ -70,4 +74,10 @@ class GameSprite {
         }
         return paint(g, frameNumber, x, y);
     }
+
+	public Drawable getTile(int frameNumber) {
+		Bitmap bitmap = frames.getBitmap((frameNumber % framesCountX) * frameWidth, (frameNumber / framesCountX) * frameHeight,
+                frameWidth, frameHeight);
+		return new BitmapDrawable(bitmap);
+	}
 }
