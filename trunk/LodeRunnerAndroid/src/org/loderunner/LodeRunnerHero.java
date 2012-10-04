@@ -113,6 +113,7 @@ class LodeRunnerHero extends LodeRunnerCharacter {
     protected boolean takeChest() {
         boolean chestTaken = super.takeChest();
         if (chestTaken) {
+        	stage.updateLevelInfo();
             sayMessage(Integer.toString(nChests) + "/" + Integer.toString(stage.nChests));
             if (nChests == stage.nChests) {
                 stage.enableExit();

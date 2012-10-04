@@ -12,7 +12,7 @@ import android.view.SurfaceHolder;
 public class LodeRunnerDrawingThread extends Thread {
 	
 	private Graphics g = new Graphics();
-	private LevelChangeListener levelChangeListener ;
+	private LevelInfoChangedListener levelInfoChangedListener ;
 	private boolean running;
 	private SurfaceHolder holder;
 	
@@ -22,9 +22,6 @@ public class LodeRunnerDrawingThread extends Thread {
 	protected volatile boolean isPaused = true;
 	/** All game events are scheduled and sequenced by a single Timer thread */
 	protected Timer timer = null;
-
-	/** Rendering is done in a dedicated animation thread */
-	private volatile Thread animationThread = null;
 	/**
 	 * Flag set to false if this game canvas was never rendered, to true
 	 * otherwise
@@ -63,7 +60,6 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	private static final byte STATUS_DONE = 1;
 	private static final byte STATUS_NOT_DONE = 0;
-	private static final int BG_COLOR_FOR_SOFTKEYS = 0x1E90FF;
 	private int spaceBetweenLines;
 	private int w0;
 	private int h0;	
@@ -131,50 +127,8 @@ public class LodeRunnerDrawingThread extends Thread {
 	}
 
 	private void doDraw(Canvas canvas) {	
-		
-		//canvas.drawRGB(0, 0, 0);
-		/*
-		Paint paintBlack = new Paint();
-		paintBlack.setARGB(255, 0, 0, 0);
-		paintBlack.setStyle(Style.STROKE);
-		canvas.drawRect(0, 0, 200, 100, paintBlack );
-		*/
 		g.setCanvas(canvas);
 		stage.paint(g);
-		/*
-		InputStream inputStream = this.context.getResources().openRawResource(R.raw.tiles12x11);
-		//esto lo dibuja en 
-		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-		canvas.drawBitmap(bitmap, 10,  10, null);
-		*/
-		
-		
-		/* seems like working
-		InputStream inputStream = this.context.getResources().openRawResource(R.raw.tiles12x11);
-		try {
-			GameSprite gameSprite = new GameSprite(inputStream, 12, 11, 0, 0);
-			gameSprite.paint(g, 30, 100, 50);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		/*
-		InputStream inputStream = this.context.getResources().openRawResource(R.raw.font);
-		
-		try {
-			GameFont gameFont = new GameFont(inputStream, 3, 5, "0123456789/");
-			gameFont.paint(g, 5, 100, 50);
-			gameFont.drawString(g, "987", 100, 70, Graphics.BOTTOM | Graphics.RIGHT);
-			gameFont.drawString(g, "012", 100, 70, Graphics.BOTTOM | Graphics.LEFT);
-			gameFont.drawString(g, "543", 100, 70, Graphics.TOP | Graphics.RIGHT);
-			gameFont.drawString(g, "123", 100, 70, Graphics.TOP | Graphics.LEFT);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} looks like workinf perfect!
-			*/	
-
 	}
 	
 
@@ -283,24 +237,9 @@ public class LodeRunnerDrawingThread extends Thread {
 					startY = getHeight() - 4 * spaceBetweenLines;
 					g.setColor(0x00ffffff);
 				}
-				paintLeft(g, LodeRunnerStage.TILE_LADDER, "Level "
-						+ format3(level + 1), startY);
-				paintRight(g, LodeRunnerStage.TILE_HERO,
-						"x" + Integer.toString(lifes), startY);
 
 				// Display stage information
 				if (stage.isLoaded) {
-					paintLeft(
-							g,
-							LodeRunnerStage.TILE_CHEST,
-							Integer.toString(stage.hero == null ? 0
-									: stage.hero.nChests)
-									+ "/"
-									+ Integer.toString(stage.nChests), startY
-									+ spaceBetweenLines);
-					paintRight(g, LodeRunnerStage.TILE_MONK,
-							"x" + Integer.toString(stage.vilains.size()),
-							startY + spaceBetweenLines);
 					if (levelStatuses[level] == STATUS_DONE) {
 						paintCenter(g, "Done!", startY + spaceBetweenLines, w0);
 					}
@@ -313,15 +252,6 @@ public class LodeRunnerDrawingThread extends Thread {
 					g.drawString("� 2006 - Fabien GIGANTE", w0 / 2, h0 - 2,
 							Graphics.HCENTER | Graphics.BOTTOM);
 				}
-				paintLeft(g, -1, "Fire=Play", startY + spaceBetweenLines * 2);
-				paintRight(g, -1, "#=Exit", startY + spaceBetweenLines * 2);
-				if (getWidth() > 160) {
-					paintSoftLeft(g, -1, "Next Level");
-					paintSoftRight(g, -1, "Suicide");
-				} else {
-					paintSoftLeft(g, -1, "Next");
-					paintSoftRight(g, -1, "Suic.");
-				}
 
 			} else {
 				if (clearAfterPause) {
@@ -329,30 +259,30 @@ public class LodeRunnerDrawingThread extends Thread {
 					g.setColor(0x000000);
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(0x00ffffff);
-					updateLevelInfo();
-					paintSoftMenu(g);
 				}
 				if (stage != null ) {
 					g.setColor(0x00ffffff);
-					updateLevelInfo();
-					paintSoftMenu(g);
-
 				}
 			}
 		}
 
 	}
 	
-	public void updateLevelInfo(){
-		String levelInfo = "Level: " + format3(level + 1);
-		if(this.levelChangeListener != null){
-			this.levelChangeListener.levelChanged(levelInfo);
+	public void updateLevelInfo(){		
+		if(this.levelInfoChangedListener != null){
+			LevelInfo levelInfo = createLevelInfo();
+			this.levelInfoChangedListener.levelInfoChanged(levelInfo);
 		}
 	}
 
-	private void paintSoftMenu(Graphics g) {
-		paintSoftLeft(g, -1, "<= Fire ");
-		paintSoftRight(g, -1, "Fire =>");
+	private LevelInfo createLevelInfo() {
+		LevelInfo levelInfo = new LevelInfo();
+		levelInfo.setNumber(level);
+		levelInfo.setLifes(lifes);
+		levelInfo.setCoinsPicked(stage.hero == null ? 0 : stage.hero.nChests);
+		levelInfo.setCoinsTotal(stage.nChests);
+		levelInfo.setVilains(stage.vilains.size());
+		return levelInfo;
 	}
 
 	/**
@@ -372,67 +302,6 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	}
 
-	private void paintSoftLeft(Graphics g, int tileIndex, String string) {
-		g.setColor(BG_COLOR_FOR_SOFTKEYS);
-		g.fillRect(0, h0 - spaceBetweenLines, w0 / 2 - 1, spaceBetweenLines);
-		g.setColor(0xffffff);
-		paintLeft(g, tileIndex, string, h0 - spaceBetweenLines);
-	}
-
-	private void paintSoftRight(Graphics g, int tileIndex, String string) {
-		g.setColor(BG_COLOR_FOR_SOFTKEYS);
-		g.fillRect(w0 / 2 + 1, h0 - spaceBetweenLines, w0 / 2 + 1,
-				spaceBetweenLines);
-		g.setColor(0xffffff);
-		paintRight(g, tileIndex, string, h0 - spaceBetweenLines);
-	}
-
-	private void paintLeft(Graphics g, int tileIndex, String string, int y) {
-		if (tileIndex >= 0) {
-			int ySprite = y
-					+ (Font.getDefaultFont().getHeight() - LodeRunnerStage.SPRITE_HEIGHT[LodeRunnerStage.SPRITE_NORMAL])
-					/ 2;
-			stage.sprites[LodeRunnerStage.SPRITE_NORMAL].paint(g,
-					LodeRunnerStage.spriteMap[tileIndex], 4, ySprite);
-			g.drawString(
-					string,
-					5 + LodeRunnerStage.SPRITE_WIDTH[LodeRunnerStage.SPRITE_NORMAL],
-					y, Graphics.TOP | Graphics.LEFT);
-		} else {
-			g.drawString(string, 5, y, Graphics.TOP | Graphics.LEFT);
-		}
-	}
-
-	private void paintRight(Graphics g, int tileIndex, String string, int y) {
-		if (w0 == 0) {
-			w0 = getWidth();
-		}
-
-		paintRight(g, tileIndex, string, y, w0);
-	}
-
-	private void paintRight(Graphics g, int tileIndex, String string, int y,
-			int screenWidth) {
-		if (tileIndex >= 0) {
-			int ySprite = y
-					+ (Font.getDefaultFont().getHeight() - LodeRunnerStage.SPRITE_HEIGHT[LodeRunnerStage.SPRITE_NORMAL])
-					/ 2;
-			g.drawString(string, screenWidth - 4, y, Graphics.TOP
-					| Graphics.RIGHT);
-			int textWidth = Font.getDefaultFont().stringWidth(string);
-			stage.sprites[LodeRunnerStage.SPRITE_NORMAL]
-					.paint(g,
-							LodeRunnerStage.spriteMap[tileIndex],
-							screenWidth
-									- 4
-									- LodeRunnerStage.SPRITE_WIDTH[LodeRunnerStage.SPRITE_NORMAL]
-									- textWidth, ySprite);
-		} else {
-			g.drawString(string, screenWidth - 4, y, Graphics.TOP
-					| Graphics.RIGHT);
-		}
-	}
-
 	private void paintCenter(Graphics g, String string, int y, int screenWidth) {
 
 		int stringWidth = Font.getDefaultFont().stringWidth(string);
@@ -445,15 +314,6 @@ public class LodeRunnerDrawingThread extends Thread {
 				| Graphics.HCENTER);
 	}
 
-	private String format3(int number) {
-		if (number < 10) {
-			return "00" + number;
-		}
-		if (number < 100) {
-			return "0" + number;
-		}
-		return Integer.toString(number);
-	}
 
 	private void clearDoneLevels() {
 		/*
@@ -652,8 +512,15 @@ public class LodeRunnerDrawingThread extends Thread {
         updateLevelInfo();
     }
 
-	public void setLevelChangeListener(LevelChangeListener levelChangeListener) {
-		this.levelChangeListener = levelChangeListener;
-	}	    
+	public void setLevelInfoChangedListener(final LevelInfoChangedListener levelInfoChangedListener) {
+		this.levelInfoChangedListener = levelInfoChangedListener;
+		this.stage.setLevelInfoChangedListener(new LevelInfoChangedListener() {
+			@Override
+			public void levelInfoChanged(LevelInfo dontCare) {
+				LevelInfo levelInfo = createLevelInfo();
+				levelInfoChangedListener.levelInfoChanged(levelInfo);				
+			}
+		});
+	}
 
 }

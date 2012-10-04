@@ -1,5 +1,7 @@
 package org.loderunner;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * This is just a wrapper to expose a simpler interface for
  * LodeRunnerdrawingThread
@@ -47,8 +49,8 @@ public class GameManager {
 		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
 	}	
 	
-	public void setLevelChangeListener(LevelChangeListener levelChangeListener){
-		lodeRunnerDrawingThread.setLevelChangeListener(levelChangeListener);
+	public void setLevelChangeListener(LevelInfoChangedListener levelChangeListener){
+		lodeRunnerDrawingThread.setLevelInfoChangedListener(levelChangeListener);
 	}
 
 	public void suicide() {
@@ -99,8 +101,6 @@ public class GameManager {
 	}
 
 	public void updateLevelInfo() {
-		lodeRunnerDrawingThread.updateLevelInfo();
-		
+		lodeRunnerDrawingThread.updateLevelInfo();		
 	}
-
 }

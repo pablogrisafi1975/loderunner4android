@@ -3,15 +3,17 @@ package org.loderunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.loderunner.LodeRunnerDrawingThread.VilainsHeartbeatTask;
+
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
-import android.view.ViewConfiguration;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -43,6 +45,9 @@ public class ViewManager {
 	private List<Button> menuButtons;
 	private GameManager gameManager;
 	private TextView levelTextView;
+	private TextView lifesTextView;
+	private TextView coinsTextView;
+	private TextView villainsTextView;
 		
 
 	public ViewManager(LodeRunnerActivity lodeRunnerActivity, GameManager gameManager, RelativeLayout relativeLayout, LodeRunnerView lodeRunnerView) {
@@ -54,6 +59,10 @@ public class ViewManager {
 		this.actionButtons = new ArrayList<Button>();
 		this.menuButtons = new ArrayList<Button>();		
 		this.levelTextView = new TextView(lodeRunnerActivity);
+		this.lifesTextView = new TextView(lodeRunnerActivity);
+		this.coinsTextView = new TextView(lodeRunnerActivity);
+		this.villainsTextView = new TextView(lodeRunnerActivity);
+		
 	}
 	
 	public Runnable init(){
@@ -80,7 +89,6 @@ public class ViewManager {
 				createMenuWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
 				
 				gameManager.updateLevelInfo();
-				
 
 			};
 		};
@@ -208,16 +216,36 @@ public class ViewManager {
 					}
 				});
 		//level info	
-		levelTextView.setText("level?");
-		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize);
-		gameManager.setLevelChangeListener(new LevelChangeListener() {
+		levelTextView.setText("level?");		
+		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize / 2);
+		
+		lifesTextView.setText("lifes?");
+		addView(lifesTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize / 2, bigButtonSize, smallButtonSize / 2);
+		 
+		coinsTextView.setText("coins?");		
+		addView(coinsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize , bigButtonSize, smallButtonSize / 2);
+		
+		villainsTextView.setText("vilains?");
+		addView(villainsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize * 3 / 2, bigButtonSize, smallButtonSize / 2);
+		
+		gameManager.setLevelChangeListener(new LevelInfoChangedListener() {
 			@Override
-			public void levelChanged(final String levelInfo) {
-				Log.d(ViewManager.class.getCanonicalName(), "levelInfo: " + levelInfo);
+			public void levelInfoChanged(final LevelInfo levelInfo) {
+				Log.d(ViewManager.class.getCanonicalName(), "LevelInfo: " + levelInfo);
 				lodeRunnerActivity.runOnUiThread(new Runnable() {					
 					public void run() {
-						levelTextView.setText(levelInfo);
-						levelTextView.invalidate();						
+						levelTextView.setText(String.format("Level: %03d", levelInfo.getNumber() + 1));						
+						levelTextView.invalidate();
+
+						lifesTextView.setText(String.format("Lifes: %d", levelInfo.getLifes()));						
+						lifesTextView.invalidate();
+						
+						coinsTextView.setText(String.format("$: %d/%d", levelInfo.getCoinsPicked(), levelInfo.getCoinsTotal()));						
+						coinsTextView.invalidate();
+						
+						villainsTextView.setText(String.format("Foes: %d", levelInfo.getVilains()));						
+						villainsTextView.invalidate();						
+						
 					}
 				});
 							
@@ -227,6 +255,7 @@ public class ViewManager {
 		
 	}
 	
+
 	private void createMenuWidgets(int drawingWidth, int squareButtonSize, int menuButtonSize, int lastButtonLine) {
 		//menu
 		addButton(TEXT_PLAY, MARGIN, MARGIN, menuButtonSize, false, new View.OnClickListener() {
