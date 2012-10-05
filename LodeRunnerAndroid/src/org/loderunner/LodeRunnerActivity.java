@@ -75,6 +75,9 @@ public class LodeRunnerActivity extends Activity {
 		case KeyEvent.KEYCODE_E:
 			gameManager.digRight();
 			return true;
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			gameManager.dig();
+			return true;			
 		case KeyEvent.KEYCODE_M:
 			onMenu();			
 			return true;

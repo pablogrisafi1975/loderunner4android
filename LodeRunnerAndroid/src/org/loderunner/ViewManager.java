@@ -3,17 +3,16 @@ package org.loderunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.loderunner.LodeRunnerDrawingThread.VilainsHeartbeatTask;
-
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -28,8 +27,9 @@ public class ViewManager {
 	private static final String TEXT_LEFT = "\u2190";
 	private static final String TEXT_DOWN = "\u2193";
 	private static final String TEXT_UP = "\u2191";
-	private static final String TEXT_DIG_RIGTH = "\u2198";
+	private static final String TEXT_DIG_RIGHT = "\u2198";
 	private static final String TEXT_DIG_LEFT = "\u2199";
+	private static final String TEXT_DIG = "\u2199\u2198";
 	private static final String TEXT_MENU = "Menu";
 	private static final String TEXT_PLAY = "Play";
 	private static final String TEXT_SUICIDE = "Suicide";
@@ -45,9 +45,10 @@ public class ViewManager {
 	private List<Button> menuButtons;
 	private GameManager gameManager;
 	private TextView levelTextView;
-	private TextView lifesTextView;
+	private TextView livesTextView;
 	private TextView coinsTextView;
 	private TextView villainsTextView;
+	private TextView doneTextView;
 		
 
 	public ViewManager(LodeRunnerActivity lodeRunnerActivity, GameManager gameManager, RelativeLayout relativeLayout, LodeRunnerView lodeRunnerView) {
@@ -59,9 +60,11 @@ public class ViewManager {
 		this.actionButtons = new ArrayList<Button>();
 		this.menuButtons = new ArrayList<Button>();		
 		this.levelTextView = new TextView(lodeRunnerActivity);
-		this.lifesTextView = new TextView(lodeRunnerActivity);
+		this.livesTextView = new TextView(lodeRunnerActivity);
 		this.coinsTextView = new TextView(lodeRunnerActivity);
 		this.villainsTextView = new TextView(lodeRunnerActivity);
+		
+		this.doneTextView = new TextView(lodeRunnerActivity);
 		
 	}
 	
@@ -82,6 +85,9 @@ public class ViewManager {
 
 
 				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
+						LODE_RUNNER_VIEW_HEIGHT);
+				
+				addView(doneTextView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
 						LODE_RUNNER_VIEW_HEIGHT);
 
 				createActionWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
@@ -176,12 +182,19 @@ public class ViewManager {
 				});
 
 		// dig right
-		addButton(TEXT_DIG_RIGTH, 2 * MARGIN + smallButtonSize, lastButtonLine, smallButtonSize, true,
+		addButton(TEXT_DIG_RIGHT, 2 * MARGIN + smallButtonSize, lastButtonLine, smallButtonSize, true,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.digRight();
 					}
 				});
+		//dig
+		addButton(TEXT_DIG, MARGIN, lastButtonLine - MARGIN - bigButtonSize, bigButtonSize, true,
+				new View.OnClickListener() {
+					public void onClick(View v) {
+						gameManager.dig();
+					}
+				});		
 
 		// up
 		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
@@ -219,8 +232,8 @@ public class ViewManager {
 		levelTextView.setText("level?");		
 		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize / 2);
 		
-		lifesTextView.setText("lifes?");
-		addView(lifesTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize / 2, bigButtonSize, smallButtonSize / 2);
+		livesTextView.setText("lifes?");
+		addView(livesTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize / 2, bigButtonSize, smallButtonSize / 2);
 		 
 		coinsTextView.setText("coins?");		
 		addView(coinsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize , bigButtonSize, smallButtonSize / 2);
@@ -237,14 +250,17 @@ public class ViewManager {
 						levelTextView.setText(String.format("Level: %03d", levelInfo.getNumber() + 1));						
 						levelTextView.invalidate();
 
-						lifesTextView.setText(String.format("Lifes: %d", levelInfo.getLifes()));						
-						lifesTextView.invalidate();
+						livesTextView.setText(String.format("Lives: %d", levelInfo.getLives()));						
+						livesTextView.invalidate();
 						
 						coinsTextView.setText(String.format("$: %d/%d", levelInfo.getCoinsPicked(), levelInfo.getCoinsTotal()));						
 						coinsTextView.invalidate();
 						
 						villainsTextView.setText(String.format("Foes: %d", levelInfo.getVilains()));						
-						villainsTextView.invalidate();						
+						villainsTextView.invalidate();			
+						
+						doneTextView.setVisibility(levelInfo.isDone() ? View.VISIBLE : View.INVISIBLE);
+						doneTextView.invalidate();		
 						
 					}
 				});
@@ -256,38 +272,44 @@ public class ViewManager {
 	}
 	
 
-	private void createMenuWidgets(int drawingWidth, int squareButtonSize, int menuButtonSize, int lastButtonLine) {
+	private void createMenuWidgets(int drawingWidth, int smallButtonSize, int bigButtonSize, int lastButtonLine) {
+		doneTextView.setText("Done!");
+		doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 2);
+		doneTextView.setTextColor(0xFF00FF00);
+		doneTextView.setGravity(Gravity.CENTER);
+		doneTextView.setVisibility(View.INVISIBLE);		
+		
 		//menu
-		addButton(TEXT_PLAY, MARGIN, MARGIN, menuButtonSize, false, new View.OnClickListener() {
+		addButton(TEXT_PLAY, MARGIN, MARGIN, bigButtonSize, false, new View.OnClickListener() {
 			public void onClick(View v) {
 				lodeRunnerActivity.onPlay();
 			}		
 		});
 
 		// suicide
-		addButton(TEXT_SUICIDE, drawingWidth - MARGIN - menuButtonSize, MARGIN, menuButtonSize, false,
+		addButton(TEXT_SUICIDE, drawingWidth - MARGIN - bigButtonSize, MARGIN, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.suicide();
 					}
 				});
 		
-		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - menuButtonSize, MARGIN * 2 + menuButtonSize, menuButtonSize, false,
+		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - bigButtonSize, MARGIN * 2 + bigButtonSize, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						gameManager.clearDone();
+						showClearDoneDialog();
 					}
 				});		
 		
 		int afterViewY = LODE_RUNNER_VIEW_HEIGHT + MARGIN;
 		
-		addButton(TEXT_FIRST, (drawingWidth - menuButtonSize)/2 - 2 * (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
+		addButton(TEXT_FIRST, (drawingWidth - bigButtonSize)/2 - 2 * (bigButtonSize + MARGIN), afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.firstLevel();
 					}
 				});		
-		Button prevButton = addButton(TEXT_PREV, (drawingWidth - menuButtonSize)/2 - (menuButtonSize + MARGIN), afterViewY, menuButtonSize, false,
+		Button prevButton = addButton(TEXT_PREV, (drawingWidth - bigButtonSize)/2 - (bigButtonSize + MARGIN), afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.prevLevel();
@@ -301,7 +323,7 @@ public class ViewManager {
 			}
 		});		
 		
-		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + menuButtonSize )/2 + MARGIN, afterViewY, menuButtonSize, false,
+		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + bigButtonSize )/2 + MARGIN, afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.nextLevel();
@@ -318,7 +340,7 @@ public class ViewManager {
 		});
 		
 		
-		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + menuButtonSize )/2 + 2 * MARGIN + menuButtonSize , afterViewY, menuButtonSize, false,
+		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + bigButtonSize )/2 + 2 * MARGIN + bigButtonSize , afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.unsolvedLevel();
@@ -327,10 +349,27 @@ public class ViewManager {
 
 	}
 
+
+	
+	private void showClearDoneDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this.lodeRunnerActivity);
+		builder.setTitle("Are you sure about clearing all done levels?").setMessage("Warning!");		
+		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	              gameManager.clearDone();
+	           }
+	       });
+		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int id) {
+	               dialog.cancel();
+	           }
+	       });
+		builder.show();
+	}
+
 	//horrible hack to create a repeating button class
 	//too lazy to create a class
 	//I suck
-	
 	private void makeRepeatingButton(final Button button, final OnLongClickListener longClickListener) {
 		button.setLongClickable(true);
 		View.OnLongClickListener filteredLongClickListener = new View.OnLongClickListener() {			
@@ -368,11 +407,5 @@ public class ViewManager {
 		t.start();
 	}
 
-
-	public TextView getLevelTextView() {
-		return levelTextView;
-	}
-
-	
 
 }

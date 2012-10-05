@@ -1,6 +1,5 @@
 package org.loderunner;
 
-import android.graphics.drawable.Drawable;
 
 /**
  * This is just a wrapper to expose a simpler interface for
@@ -18,10 +17,16 @@ public class GameManager {
 	private final LodeRunnerDrawingThread lodeRunnerDrawingThread;
 
 	public void pause() {
+		if(lodeRunnerDrawingThread.isPaused){
+			return;
+		}
 		lodeRunnerDrawingThread.pause();
 	}
 
 	public void play() {
+		if(!lodeRunnerDrawingThread.isPaused){
+			return;
+		}		
 		lodeRunnerDrawingThread.play();
 	}
 
@@ -49,6 +54,11 @@ public class GameManager {
 		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
 	}	
 	
+	public void dig() {
+		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG);
+		
+	}
+	
 	public void setLevelChangeListener(LevelInfoChangedListener levelChangeListener){
 		lodeRunnerDrawingThread.setLevelInfoChangedListener(levelChangeListener);
 	}
@@ -58,13 +68,12 @@ public class GameManager {
 	}
 
 	public void clearDone() {
-		// TODO Auto-generated method stub
+		lodeRunnerDrawingThread.clearDoneLevels();
 		
 	}
 
 	public void firstLevel() {
-		lodeRunnerDrawingThread.loadNewLevel(0);
-		
+		lodeRunnerDrawingThread.loadNewLevel(0);		
 	}
 
 	public void prevLevel() {
@@ -103,4 +112,6 @@ public class GameManager {
 	public void updateLevelInfo() {
 		lodeRunnerDrawingThread.updateLevelInfo();		
 	}
+
+
 }

@@ -5,17 +5,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
 public class LodeRunnerDrawingThread extends Thread {
-	
+
 	private Graphics g = new Graphics();
-	private LevelInfoChangedListener levelInfoChangedListener ;
+	private LevelInfoChangedListener levelInfoChangedListener;
 	private boolean running;
 	private SurfaceHolder holder;
-	
+
 	/** Rendering frequency used by the animation thread */
 	protected final static int FRAMERATE_MILLISEC = 66;
 	/** "In pause" status of the game */
@@ -50,23 +51,23 @@ public class LodeRunnerDrawingThread extends Thread {
 	 */
 	private static final int MAX_LIFES = 5;
 	/** Lifes left to the player */
-	private int lifes = MAX_LIFES;
+	private int lives = MAX_LIFES;
 	/** Level number of the current stage */
 	public int level = 0;
 	/** Current stage, when game is in progress */
 	private LodeRunnerStage stage = null;
-	
+
 	private byte[] levelStatuses = new byte[LodeRunnerStage.MAX_LEVELS];
 
 	private static final byte STATUS_DONE = 1;
 	private static final byte STATUS_NOT_DONE = 0;
 	private int spaceBetweenLines;
 	private int w0;
-	private int h0;	
-	
+	private int h0;
+
 	private int width;
 	private int height;
-	private Context context;	
+	private Context context;
 
 	public int getWidth() {
 		return width;
@@ -75,7 +76,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	public int getHeight() {
 		return height;
 	}
-	
+
 	private static LodeRunnerDrawingThread instance;
 
 	public LodeRunnerDrawingThread(SurfaceHolder holder, Context context, int width, int heigth) {
@@ -87,16 +88,17 @@ public class LodeRunnerDrawingThread extends Thread {
 		InputStream fontInputStream = this.context.getResources().openRawResource(R.raw.font);
 		InputStream tilesInputStream0 = this.context.getResources().openRawResource(R.raw.tiles12x11);
 		InputStream tilesInputStream1 = this.context.getResources().openRawResource(R.raw.tiles4x4);
-		InputStream[] tilesInputStreams = new InputStream[]{tilesInputStream0, tilesInputStream1} ;
+		InputStream[] tilesInputStreams = new InputStream[] { tilesInputStream0, tilesInputStream1 };
 		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);
 		stage.loadFromResource(openBinInputStream());
+		recoverStatus();
 	}
 
 	private InputStream openBinInputStream() {
 		return this.context.getResources().openRawResource(R.raw.loderunnerbin);
 	}
-	
-	public static LodeRunnerDrawingThread getInstance(){
+
+	public static LodeRunnerDrawingThread getInstance() {
 		return instance;
 	}
 
@@ -111,7 +113,7 @@ public class LodeRunnerDrawingThread extends Thread {
 			Canvas canvas = null;
 			try {
 				canvas = holder.lockCanvas(null);
-				
+
 				synchronized (holder) {
 					doDraw(canvas);
 				}
@@ -126,69 +128,54 @@ public class LodeRunnerDrawingThread extends Thread {
 		}
 	}
 
-	private void doDraw(Canvas canvas) {	
+	private void doDraw(Canvas canvas) {
 		g.setCanvas(canvas);
 		stage.paint(g);
 	}
-	
 
 	/** Render the message or splash screen */
 	private void paintMessage(Graphics g, int w, int h) {
 		Font font = null;
 		// There is a message to render
 		if (pauseMessage != null) {
-			font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD
-					| Font.STYLE_ITALIC, Font.SIZE_LARGE);
+			font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD | Font.STYLE_ITALIC, Font.SIZE_LARGE);
 			g.setFont(font);
 			g.setColor(0x00ffffff);
-			g.drawString(pauseMessage, w / 2, (h - font.getHeight()) / 2,
-					Graphics.HCENTER | Graphics.TOP);
+			g.drawString(pauseMessage, w / 2, (h - font.getHeight()) / 2, Graphics.HCENTER | Graphics.TOP);
 		} // No message but a splash screen
 		else if (splashScreen != null) {
 			if ((level / LodeRunnerStage.GAME_LEVELS) % 2 == 0) {
 				// Lode Runner splash screen
-				splashScreen.paint(g, 0, w / 2, h / 2, Graphics.HCENTER
-						| Graphics.VCENTER);
+				splashScreen.paint(g, 0, w / 2, h / 2, Graphics.HCENTER | Graphics.VCENTER);
 			} else {
 				// Championship splash screen
-				splashScreen.paint(g, 0, w / 2, h / 2 - 6, Graphics.HCENTER
-						| Graphics.VCENTER);
-				splashScreen.paint(g, 1, w / 2, h / 2 + 6, Graphics.HCENTER
-						| Graphics.VCENTER);
+				splashScreen.paint(g, 0, w / 2, h / 2 - 6, Graphics.HCENTER | Graphics.VCENTER);
+				splashScreen.paint(g, 1, w / 2, h / 2 + 6, Graphics.HCENTER | Graphics.VCENTER);
 			}
 		} // No message, no splash screen
 		else {
 			// Simulate a splash screen with text
 			if ((level / LodeRunnerStage.GAME_LEVELS) % 2 == 0) {
 				// Lode Runner splash screen
-				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD,
-						Font.SIZE_LARGE);
+				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD, Font.SIZE_LARGE);
 				g.setFont(font);
 				g.setColor(0x00ffffff);
-				g.drawString("Lode Runner", w / 2, (h - font.getHeight()) / 2,
-						Graphics.HCENTER | Graphics.TOP);
+				g.drawString("Lode Runner", w / 2, (h - font.getHeight()) / 2, Graphics.HCENTER | Graphics.TOP);
 			} else {
 				// Championship splash screen
-				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD,
-						Font.SIZE_LARGE);
+				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_BOLD, Font.SIZE_LARGE);
 				g.setFont(font);
 				g.setColor(0x00ffffff);
-				g.drawString("Lode Runner", w / 2,
-						(h - font.getHeight()) / 2 - 6, Graphics.HCENTER
-								| Graphics.TOP);
-				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_ITALIC,
-						Font.SIZE_LARGE);
+				g.drawString("Lode Runner", w / 2, (h - font.getHeight()) / 2 - 6, Graphics.HCENTER | Graphics.TOP);
+				font = Font.getFont(Font.FACE_PROPORTIONAL, Font.STYLE_ITALIC, Font.SIZE_LARGE);
 				g.setFont(font);
 				g.setColor(0x00ff0000);
-				g.drawString("Championship", w / 2,
-						(h - font.getHeight()) / 2 + 6, Graphics.HCENTER
-								| Graphics.TOP);
+				g.drawString("Championship", w / 2, (h - font.getHeight()) / 2 + 6, Graphics.HCENTER | Graphics.TOP);
 			}
 		}
 	}
 
 	boolean clearAfterPause = true;
-	
 
 	/** Render the game canvas */
 	public void paint(Graphics g) {
@@ -209,10 +196,8 @@ public class LodeRunnerDrawingThread extends Thread {
 				stage.spriteSize = LodeRunnerStage.SPRITE_SMALL;
 				stage.paint(g);
 
-				int cx = LodeRunnerStage.STAGE_WIDTH
-						* LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize];
-				int cy = LodeRunnerStage.STAGE_HEIGHT
-						* LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize];
+				int cx = LodeRunnerStage.STAGE_WIDTH * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize];
+				int cy = LodeRunnerStage.STAGE_HEIGHT * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize];
 				int x = (w0 - cx) / 2, y = (h0 - cy) / 2;
 				if (x > 10) {
 					x = 10;
@@ -245,12 +230,10 @@ public class LodeRunnerDrawingThread extends Thread {
 					}
 				} else {
 					g.setColor(0x00ffff00);
-					g.drawString("Loading...", x + cx / 2,
-							y + (cy - font.getHeight()) / 2, Graphics.TOP
-									| Graphics.HCENTER);
+					g.drawString("Loading...", x + cx / 2, y + (cy - font.getHeight()) / 2, Graphics.TOP
+							| Graphics.HCENTER);
 					g.setColor(0x001463af);
-					g.drawString("� 2006 - Fabien GIGANTE", w0 / 2, h0 - 2,
-							Graphics.HCENTER | Graphics.BOTTOM);
+					g.drawString("� 2006 - Fabien GIGANTE", w0 / 2, h0 - 2, Graphics.HCENTER | Graphics.BOTTOM);
 				}
 
 			} else {
@@ -260,16 +243,16 @@ public class LodeRunnerDrawingThread extends Thread {
 					g.fillRect(0, 0, getWidth(), getHeight());
 					g.setColor(0x00ffffff);
 				}
-				if (stage != null ) {
+				if (stage != null) {
 					g.setColor(0x00ffffff);
 				}
 			}
 		}
 
 	}
-	
-	public void updateLevelInfo(){		
-		if(this.levelInfoChangedListener != null){
+
+	public void updateLevelInfo() {
+		if (this.levelInfoChangedListener != null) {
 			LevelInfo levelInfo = createLevelInfo();
 			this.levelInfoChangedListener.levelInfoChanged(levelInfo);
 		}
@@ -278,16 +261,18 @@ public class LodeRunnerDrawingThread extends Thread {
 	private LevelInfo createLevelInfo() {
 		LevelInfo levelInfo = new LevelInfo();
 		levelInfo.setNumber(level);
-		levelInfo.setLifes(lifes);
+		levelInfo.setLives(lives);
 		levelInfo.setCoinsPicked(stage.hero == null ? 0 : stage.hero.nChests);
 		levelInfo.setCoinsTotal(stage.nChests);
 		levelInfo.setVilains(stage.vilains.size());
+		levelInfo.setDone(levelStatuses[level] == STATUS_DONE);
 		return levelInfo;
 	}
 
 	/**
 	 * 
-	 * @param newLevel 0-based level
+	 * @param newLevel
+	 *            0-based level
 	 */
 	public void loadNewLevel(int newLevel) {
 		pauseMessage = null;
@@ -307,34 +292,17 @@ public class LodeRunnerDrawingThread extends Thread {
 		int stringWidth = Font.getDefaultFont().stringWidth(string);
 		int height = Font.getDefaultFont().getHeight();
 		g.setColor(0x008800);
-		g.fillRoundRect((screenWidth - stringWidth) / 2 - 2, y - 2,
-				stringWidth + 4, height + 4, 8, 800);
+		g.fillRoundRect((screenWidth - stringWidth) / 2 - 2, y - 2, stringWidth + 4, height + 4, 8, 800);
 		g.setColor(0xffffff);
-		g.drawString(string, screenWidth / 2, y, Graphics.TOP
-				| Graphics.HCENTER);
+		g.drawString(string, screenWidth / 2, y, Graphics.TOP | Graphics.HCENTER);
 	}
 
-
-	private void clearDoneLevels() {
-		/*
-		 * Alert alertClear = new Alert("Clear solved levels",
-		 * "Are you sure you want to clear all solved levels?", null,
-		 * AlertType.CONFIRMATION); final Command commandYes = new
-		 * Command("Yes", Command.OK, 1); final Command commandNo = new
-		 * Command("No", Command.CANCEL, 2); alertClear.addCommand(commandNo);
-		 * alertClear.addCommand(commandYes); final Displayable
-		 * currenDisplayable = Display.getDisplay(midlet).getCurrent();
-		 * alertClear.setCommandListener(new CommandListener() {
-		 * 
-		 * public void commandAction(Command c, Displayable d) { if (c ==
-		 * commandYes) { for (int i = 0; i < levelStatuses.length; i++) {
-		 * levelStatuses[i] = STATUS_NOT_DONE; } try { saveToStore(GAME_NAME); }
-		 * catch (IOException ex) { ex.printStackTrace(); } catch
-		 * (RecordStoreException ex) { ex.printStackTrace(); } }
-		 * Display.getDisplay(midlet).setCurrent(currenDisplayable); } });
-		 * 
-		 * Display.getDisplay(midlet).setCurrent(alertClear);
-		 */
+	public void clearDoneLevels() {
+		for (int i = 0; i < levelStatuses.length; i++) {
+			levelStatuses[i] = STATUS_NOT_DONE;
+		}
+		persistStatus();
+		updateLevelInfo();
 	}
 
 	protected abstract class GameTask extends TimerTask {
@@ -365,11 +333,12 @@ public class LodeRunnerDrawingThread extends Thread {
 
 		/** Heartbeat */
 		public void run() {
-			if (stage != null && stage.isLoaded && stage.hero != null) {				
+			if (stage != null && stage.isLoaded && stage.hero != null) {
 				stage.hero.heartBeat();
-				if(stage.endCompleted || stage.endHeroDied){
-					Log.d(HeroHeartbeatTask.class.getCanonicalName(), "Hero died! endCompleted:" + stage.endCompleted + " endHeroDied:" + stage.endHeroDied);
-				}				
+				if (stage.endCompleted || stage.endHeroDied) {
+					Log.d(HeroHeartbeatTask.class.getCanonicalName(), "Hero died! endCompleted:" + stage.endCompleted
+							+ " endHeroDied:" + stage.endHeroDied);
+				}
 				if (stage.endCompleted) {
 					stageOver(true);
 				} else if (stage.endHeroDied) {
@@ -451,21 +420,20 @@ public class LodeRunnerDrawingThread extends Thread {
 	public void stageOver(boolean hasCompleted) {
 		if (!isPaused) {
 			levelStatuses[level] = hasCompleted ? STATUS_DONE : STATUS_NOT_DONE;
-			//pause();
+			pause();
 		}
-		// Adjust lifes and level
+		// Adjust lives and level
 
 		if (hasCompleted) {
 			level++;
 			if (level == LodeRunnerStage.MAX_LEVELS) {
 				level = 0;
 			}
-			pauseMessage = (level % LodeRunnerStage.GAME_LEVELS == 0) ? null
-					: "Congratulations !";
+			pauseMessage = (level % LodeRunnerStage.GAME_LEVELS == 0) ? null : "Congratulations !";
 		} else {
-			lifes--;
-			if (lifes < 0) {
-				lifes = MAX_LIFES;
+			lives--;
+			if (lives < 0) {
+				lives = MAX_LIFES;
 				level = 0;
 				pauseMessage = "Game Over";
 			} else {
@@ -482,35 +450,39 @@ public class LodeRunnerDrawingThread extends Thread {
 	}
 
 	public void gameAction(int actionCode) {
-		stage.hero.requestMove(actionCode);		
-	}	
-	
-    public synchronized void pause() {
-    	if(isPaused){
-    		return;
-    	}
-        needsRepaint = REPAINT_ALL;
-        isPaused = true;
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
-        }
-    }	
-    
-    public synchronized void play() {
-    	if(!isPaused){
-    		return;
-    	}
-        needsRepaint = REPAINT_ALL;
-        isPaused = false;
-        timer = new Timer();   
-        timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
-        // Schedule the villains' heartBeat
-        timer.schedule(new VilainsHeartbeatTask(), 0, VilainsHeartbeatTask.PERIOD);
-        // Schedule the stage's heartBeat
-        timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);
-        updateLevelInfo();
-    }
+		if (actionCode == LodeRunnerHero.MOVE_DIG) {
+			if (stage.hero.lookLeft) {
+				stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_LEFT);
+			} else {
+				stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_RIGHT);
+			}
+		} else {
+			stage.hero.requestMove(actionCode);
+		}
+	}
+
+	public synchronized void pause() {
+		persistStatus();
+		needsRepaint = REPAINT_ALL;
+		isPaused = true;
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+	}
+
+	public synchronized void play() {
+		needsRepaint = REPAINT_ALL;
+		isPaused = false;
+		timer = new Timer();
+		levelStatuses[level] = STATUS_NOT_DONE;
+		timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
+		// Schedule the villains' heartBeat
+		timer.schedule(new VilainsHeartbeatTask(), 0, VilainsHeartbeatTask.PERIOD);
+		// Schedule the stage's heartBeat
+		timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);
+		updateLevelInfo();
+	}
 
 	public void setLevelInfoChangedListener(final LevelInfoChangedListener levelInfoChangedListener) {
 		this.levelInfoChangedListener = levelInfoChangedListener;
@@ -518,9 +490,47 @@ public class LodeRunnerDrawingThread extends Thread {
 			@Override
 			public void levelInfoChanged(LevelInfo dontCare) {
 				LevelInfo levelInfo = createLevelInfo();
-				levelInfoChangedListener.levelInfoChanged(levelInfo);				
+				levelInfoChangedListener.levelInfoChanged(levelInfo);
 			}
 		});
+	}
+
+	private void recoverStatus() {
+		SharedPreferences settings = context.getSharedPreferences(GAME_NAME, Context.MODE_PRIVATE);
+		this.level = settings.getInt("level", 0);
+		this.lives = settings.getInt("lifes", MAX_LIFES);
+		String[] levels = settings.getString("levelStatuses", "").split("L");
+		for (int i = 0; i < levelStatuses.length; i++) {
+			byte status = STATUS_NOT_DONE;
+			if (i < levels.length) {
+				Byte newStatus = STATUS_NOT_DONE;
+				try {
+					newStatus = Byte.valueOf(levels[i]);
+				} catch (Exception ex) {
+					newStatus = STATUS_NOT_DONE;
+				}
+				if (newStatus.equals(STATUS_DONE)) {
+					status = newStatus;
+				}
+			}
+			levelStatuses[i] = status;
+		}
+
+	}
+
+	private void persistStatus() {
+		SharedPreferences settings = context.getSharedPreferences(GAME_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("level", level);
+		editor.putInt("lifes", lives);
+		StringBuffer levels = new StringBuffer();
+		for (byte b : levelStatuses) {
+			levels.append(String.valueOf(b)).append('L');
+		}
+		editor.putString("levelStatuses", levels.toString());
+
+		// Commit the edits!
+		editor.commit();
 	}
 
 }
