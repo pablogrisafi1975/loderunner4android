@@ -10,7 +10,7 @@ package org.loderunner;
  * - implements take/drop chest behavior
  * - implements moving AI
  */
-class LodeRunnerVilain extends LodeRunnerCharacter {
+class LodeRunnerVillain extends LodeRunnerCharacter {
 
     /** Move type constant for climbing outside a hole */
     public static final int MOVE_CLIMB_HOLE = 6;
@@ -31,7 +31,7 @@ class LodeRunnerVilain extends LodeRunnerCharacter {
     private boolean isTrapped;
 
     /** Initialize this vilain in the stage */
-    LodeRunnerVilain(LodeRunnerStage stage) {
+    LodeRunnerVillain(LodeRunnerStage stage) {
         super(stage);
     }
 
@@ -182,7 +182,7 @@ class LodeRunnerVilain extends LodeRunnerCharacter {
         int xLeft = 0, xRight = 0;
         // Compute the vertical access locations
         // (Note: other vilains being considered impassable, further vilains will try to use a different access towards player)
-        LodeRunnerVilain ghost = new LodeRunnerVilain(stage);
+        LodeRunnerVillain ghost = new LodeRunnerVillain(stage);
         ghost.moveToTile(LodeRunnerStage.getTileIndex(xTile, yTile));
         while (ghost.isPossibleMove(MOVE_RUN_LEFT)) {
             ghost.xTile--;

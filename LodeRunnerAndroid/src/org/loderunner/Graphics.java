@@ -54,11 +54,12 @@ public class Graphics {
 
 
 	public void setColor(int color) {
+		color += 0xff000000;
 		nextPaint = findPaint(color);
 
 	}
 
-	private Paint findPaint(int color) {
+	private Paint findPaint(int color) {		
 		Paint paintFound = paints.get(color);
 		if (paintFound == null) {
 			paintFound = new Paint();
@@ -68,9 +69,9 @@ public class Graphics {
 		return paintFound;
 	}
 
-	public void drawLine(int i, int y, int x, int j) {
-		// TODO Auto-generated method stub
-
+	public void drawLine(int startX, int startY, int stopX, int stopY) {
+		nextPaint.setStyle(Style.STROKE);
+		canvas.drawLine(startX, startY, stopX, stopY, nextPaint);
 	}
 
 	public void fillRect(int x, int y, int width, int height) {
@@ -106,10 +107,6 @@ public class Graphics {
 
 	}
 
-	public void setFont(Font font) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void drawString(String pauseMessage, int i, int j, int k) {
 		// TODO Auto-generated method stub
