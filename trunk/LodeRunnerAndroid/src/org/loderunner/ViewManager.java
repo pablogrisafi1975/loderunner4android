@@ -124,8 +124,7 @@ public class ViewManager {
 	}
 	
 	public void showMenuWidgets() {
-		showSomeButtons(true);
-		
+		showSomeButtons(true);		
 	}	
 	
 	public void showActionWidgets() {
@@ -242,7 +241,6 @@ public class ViewManager {
 		addView(villainsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize * 3 / 2, bigButtonSize, smallButtonSize / 2);
 		
 		gameManager.setLevelChangeListener(new LevelInfoChangedListener() {
-			@Override
 			public void levelInfoChanged(final LevelInfo levelInfo) {
 				Log.d(ViewManager.class.getCanonicalName(), "LevelInfo: " + levelInfo);
 				lodeRunnerActivity.runOnUiThread(new Runnable() {					
@@ -260,22 +258,40 @@ public class ViewManager {
 						villainsTextView.invalidate();			
 						
 						doneTextView.setVisibility(levelInfo.isDone() ? View.VISIBLE : View.INVISIBLE);
+						doneTextView.setText("Done!");
+						doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 2);
+						doneTextView.setTextColor(0xFF00FF00);
 						doneTextView.invalidate();		
 						
 					}
-				});
-							
+				});							
 			}
-		});				
+		});			
+		
+		gameManager.setPauseRequestedListener(new PauseRequestedListener() {			
+			public void pauseRequest(final String message) {
+				lodeRunnerActivity.runOnUiThread(new Runnable() {
+					public void run() {
+						if(message == null){
+							doneTextView.setVisibility(View.INVISIBLE);
+						}else{					
+							doneTextView.setText(message);
+							doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 4);
+							doneTextView.setVisibility(View.VISIBLE);
+						}
+						doneTextView.invalidate();						
+					};
+				});	
+				lodeRunnerActivity.onMenu();
+				
+			};
+		});
 		
 		
 	}
 	
 
 	private void createMenuWidgets(int drawingWidth, int smallButtonSize, int bigButtonSize, int lastButtonLine) {
-		doneTextView.setText("Done!");
-		doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 2);
-		doneTextView.setTextColor(0xFF00FF00);
 		doneTextView.setGravity(Gravity.CENTER);
 		doneTextView.setVisibility(View.INVISIBLE);		
 		

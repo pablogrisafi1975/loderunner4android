@@ -1,7 +1,5 @@
 package org.loderunner;
 
-public abstract class LevelInfoChangedListener {
-
-	public abstract void levelInfoChanged(LevelInfo levelInfo);
-
+public interface LevelInfoChangedListener {
+	void levelInfoChanged(LevelInfo levelInfo);
 }

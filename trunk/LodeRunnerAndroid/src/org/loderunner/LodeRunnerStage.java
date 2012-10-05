@@ -75,7 +75,7 @@ class LodeRunnerStage {
     /** Lode Runner game hero */
     public LodeRunnerHero hero = null;
     /** Lode Runner game vilains. Vector of LodeRunnerVilain elements. */
-    public List<LodeRunnerVilain> vilains = null;
+    public List<LodeRunnerVillain> villains = null;
     /** Lode Runner holes in this stage. */
     public List<LodeRunnerHole> holes = null;
     /** Current random number generator for the stage */
@@ -157,9 +157,9 @@ class LodeRunnerStage {
                             break;
                         // Add vilains at their initial positions
                         case TILE_MONK:
-                            LodeRunnerVilain vilain = new LodeRunnerVilain(LodeRunnerStage.this);
+                            LodeRunnerVillain vilain = new LodeRunnerVillain(LodeRunnerStage.this);
                             vilain.moveToTile(i);
-                            vilains.add(vilain);
+                            villains.add(vilain);
                             tile = TILE_VOID;
                             break;
                         // Count number of chests
@@ -204,7 +204,7 @@ class LodeRunnerStage {
         // Reset members
         isLoaded = false;
         hero = null;
-        vilains = Collections.synchronizedList (new ArrayList<LodeRunnerVilain>());
+        villains = Collections.synchronizedList (new ArrayList<LodeRunnerVillain>());
         holes = Collections.synchronizedList (new ArrayList<LodeRunnerHole>());
         nChests = 0;
         exitEnabled = false;
@@ -289,8 +289,8 @@ class LodeRunnerStage {
 
     /** Check if the given tile is occupied by a vilain */
     private boolean isVilainAt(int xTile, int yTile, boolean includeRespawning) {
-        for (LodeRunnerVilain vilain :vilains) {
-            if (vilain.xTile == xTile && vilain.yTile == yTile && (includeRespawning || vilain.currentMove != LodeRunnerVilain.MOVE_RESPAWN)) {
+        for (LodeRunnerVillain vilain :villains) {
+            if (vilain.xTile == xTile && vilain.yTile == yTile && (includeRespawning || vilain.currentMove != LodeRunnerVillain.MOVE_RESPAWN)) {
                 return true;
             }
         }
@@ -371,7 +371,7 @@ class LodeRunnerStage {
         for (LodeRunnerHole lodeRunnerHole : holes) {
         	lodeRunnerHole.paint(g);
         }
-        for (LodeRunnerVilain lodeRunnerVilain : vilains) {
+        for (LodeRunnerVillain lodeRunnerVilain : villains) {
         	lodeRunnerVilain.paint(g);
         }
         if (hero != null) {

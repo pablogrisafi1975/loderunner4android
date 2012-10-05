@@ -113,5 +113,9 @@ public class GameManager {
 		lodeRunnerDrawingThread.updateLevelInfo();		
 	}
 
+	public void setPauseRequestedListener(PauseRequestedListener pauseRequestedListener) {
+		lodeRunnerDrawingThread.setPauseRequestedListener(pauseRequestedListener);		
+	}
+
 
 }
