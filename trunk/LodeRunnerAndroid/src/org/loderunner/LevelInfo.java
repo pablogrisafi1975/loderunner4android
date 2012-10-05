@@ -5,10 +5,11 @@ public class LevelInfo {
 	 * 0 based number of level
 	 */
 	private int number;
-	private int lifes;
+	private int lives;
 	private int vilains;
 	private int coinsTotal;
 	private int coinsPicked;
+	private boolean done;
 	
 	public int getNumber() {
 		return number;
@@ -18,12 +19,12 @@ public class LevelInfo {
 		this.number = number;
 	}
 
-	public int getLifes() {
-		return lifes;
+	public int getLives() {
+		return lives;
 	}
 
-	public void setLifes(int lives) {
-		this.lifes = lives;
+	public void setLives(int lives) {
+		this.lives = lives;
 	}
 
 	public int getVilains() {
@@ -50,12 +51,21 @@ public class LevelInfo {
 		this.coinsPicked = coinsPicked;
 	}
 
+	public boolean isDone() {
+		return done;
+	}
+
+	public void setDone(boolean done) {
+		this.done = done;
+	}
+
 	@Override
 	public String toString() {
-		return "LevelInfo [number=" + number + ", lifes=" + lifes + ", vilains=" + vilains + ", coinsTotal="
-				+ coinsTotal + ", coinsPicked=" + coinsPicked + "]";
+		return "LevelInfo [number=" + number + ", lives=" + lives + ", vilains=" + vilains + ", coinsTotal="
+				+ coinsTotal + ", coinsPicked=" + coinsPicked + ", done=" + done + "]";
 	}
-	
+
+
 	
 	
 	

@@ -16,9 +16,11 @@ class LodeRunnerHero extends LodeRunnerCharacter {
     public static final int MOVE_DIG_LEFT = 7;
     /** Move type constant for digging right */
     public static final int MOVE_DIG_RIGHT = 8;
+    /** Move type constant for digging */
+    public static final int MOVE_DIG = 9;    
     /** Delay in heartbeats of floating messages */
     private static final int DELAY_MESSAGE = 12;
-    /** Number of heartBeats before the floating message disapear */
+    /** Number of heartBeats before the floating message disappear */
     private int delayMessage;
     /** Current floating message text */
     private String currentMessage;
