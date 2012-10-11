@@ -83,9 +83,9 @@ public class LodeRunnerDrawingThread extends Thread {
 		InputStream tilesInputStream0 = this.context.getResources().openRawResource(R.raw.tiles12x11);
 		InputStream tilesInputStream1 = this.context.getResources().openRawResource(R.raw.tiles4x4);
 		InputStream[] tilesInputStreams = new InputStream[] { tilesInputStream0, tilesInputStream1 };
-		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);
-		stage.loadFromResource(openBinInputStream());
+		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);		
 		recoverStatus();
+		stage.loadFromResource(openBinInputStream());
 	}
 
 	private InputStream openBinInputStream() {
