@@ -80,10 +80,8 @@ public class LodeRunnerDrawingThread extends Thread {
 		this.height = heigth;
 		this.holder = holder;
 		InputStream fontInputStream = this.context.getResources().openRawResource(R.raw.font);
-		InputStream tilesInputStream0 = this.context.getResources().openRawResource(R.raw.tiles12x11);
-		InputStream tilesInputStream1 = this.context.getResources().openRawResource(R.raw.tiles4x4);
-		InputStream[] tilesInputStreams = new InputStream[] { tilesInputStream0, tilesInputStream1 };
-		stage = new LodeRunnerStage(fontInputStream, tilesInputStreams);		
+		InputStream tilesInputStream = this.context.getResources().openRawResource(R.raw.tiles12x11);
+		stage = new LodeRunnerStage(fontInputStream, tilesInputStream);		
 		recoverStatus();
 		stage.loadFromResource(openBinInputStream());
 	}
@@ -149,7 +147,6 @@ public class LodeRunnerDrawingThread extends Thread {
 	public void paint(Graphics g) {
 		// Render the stage
 		if (stage != null) {
-			stage.spriteSize = LodeRunnerStage.SPRITE_NORMAL;
 			stage.paint(g);
 			if (isPaused || !stage.isLoaded) {
 				clearAfterPause = true;
@@ -161,11 +158,11 @@ public class LodeRunnerDrawingThread extends Thread {
 				g.fillRect(0, 0, w0, h0);
 
 				// Render the stage mini-map
-				stage.spriteSize = LodeRunnerStage.SPRITE_SMALL;
-				stage.paint(g);
+				//stage.spriteSize = LodeRunnerStage.SPRITE_SMALL;
+				//stage.paint(g);
 
-				int cx = LodeRunnerStage.STAGE_WIDTH * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize];
-				int cy = LodeRunnerStage.STAGE_HEIGHT * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize];
+				int cx = LodeRunnerStage.STAGE_WIDTH * LodeRunnerStage.SPRITE_WIDTH;
+				int cy = LodeRunnerStage.STAGE_HEIGHT * LodeRunnerStage.SPRITE_HEIGHT;
 				int x = (w0 - cx) / 2, y = (h0 - cy) / 2;
 				if (x > 10) {
 					x = 10;

@@ -29,9 +29,9 @@ class LodeRunnerStage {
     /** Stage height in tiles */
     public static final int STAGE_HEIGHT = 16;
     /** Tile/sprite width in pixels */
-    public static final int[] SPRITE_WIDTH = {12, 4};
+    public static final int SPRITE_WIDTH = 12;
     /** Tile/sprite height in pixels */
-    public static final int[] SPRITE_HEIGHT = {11, 4};
+    public static final int SPRITE_HEIGHT = 11;
     /** Core tile type constant for void/empty tile */
     public static final int TILE_VOID = 0;
     /** Core tile type constant for diggable brick tile */
@@ -61,13 +61,11 @@ class LodeRunnerStage {
     /** Tiles array describing the stage landscape. Values are tile type TILE_* constants. */
     private int[] tiles = new int[STAGE_WIDTH * STAGE_HEIGHT];
     /** Lode Runner sprites (for both tiles & characters) */
-    public GameSprite[] sprites = new GameSprite[2];
+    public GameSprite sprites;
     /** Lode Runner small sprite font */
     public GameFont font = null;
     /** Mapping table from tile type to sprite index */
     public static final int[] spriteMap = { /*Core*/14, 15, 12, 16, 17, 18, 19, 20, 21, 0, /*Volatile*/ 13, 75, 74};
-    /** Current sprite size */
-    public int spriteSize = SPRITE_NORMAL;
     /** Sprite size constant for normal stage rendering */
     public static final int SPRITE_NORMAL = 0;
     /** Sprite size constant for small stage overview rendering */
@@ -100,16 +98,14 @@ class LodeRunnerStage {
 	private LevelInfoChangedListener levelInfoChangedListener;
 
     /** Initiatialize an empty stage. Load the sprites resources. */
-    LodeRunnerStage(InputStream fontInputStream, InputStream[] tilesInputStreams) {
+    LodeRunnerStage(InputStream fontInputStream, InputStream tilesInputStream) {
         //this.canvas = canvas;
         try {
             // Load game resource images (font and sprites)
             font = new GameFont(fontInputStream, 3, 5, "0123456789/");
-            for (int i = 0; i < 2; i++) {
-                sprites[i] = new GameSprite(tilesInputStreams[i], SPRITE_WIDTH[i], SPRITE_HEIGHT[i], 0, 0);
-            }
+            sprites = new GameSprite(tilesInputStream, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0);
             // If enough memory, use a background image to speed up normal stage rendering
-            backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH[SPRITE_NORMAL], STAGE_HEIGHT * SPRITE_HEIGHT[SPRITE_NORMAL]);
+            backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH, STAGE_HEIGHT * SPRITE_HEIGHT);
             backgroundTilesToRepaint = Collections.synchronizedList(new ArrayList<Integer>());
         } catch (Exception e) {
             Log.e(LodeRunnerStage.class.getCanonicalName(), "Inicialization error", e);
@@ -336,14 +332,14 @@ class LodeRunnerStage {
 
     /** Renders the stage's tiles */
     public void paintTiles(Graphics g) {
-        boolean screenCleared = (spriteSize == SPRITE_SMALL || backgroundImage == null);
+        boolean screenCleared = backgroundImage == null;
         for (int x = 0; x < STAGE_WIDTH; x++) {
             for (int y = 0; y < STAGE_HEIGHT; y++) {
                 // Tiles are drawn according to their appearance
                 int tile = getTileAppearance(x, y);
                 // If screen has been cleared, empty tiles can be skipped
                 if (screenCleared && tile != TILE_VOID) {
-                    sprites[spriteSize].paint(g, spriteMap[tile], x * SPRITE_WIDTH[spriteSize], y * SPRITE_HEIGHT[spriteSize]);
+                    sprites.paint(g, spriteMap[tile], x * SPRITE_WIDTH, y * SPRITE_HEIGHT);
                 }
             }
         }
@@ -351,7 +347,7 @@ class LodeRunnerStage {
 
     /** Renders only the tiles that need repainting */
     public void repaintBackgroundTiles() {
-        if (spriteSize != SPRITE_NORMAL || backgroundImage == null) {
+        if (backgroundImage == null) {
             return;
         }
         Graphics g = backgroundImage.getGraphics();
@@ -361,7 +357,7 @@ class LodeRunnerStage {
             int yTile = tileIndex / LodeRunnerStage.STAGE_WIDTH;
             // Tiles are drawn according to their appearance
             int tileAppearance = getTileAppearance(xTile, yTile);
-            sprites[spriteSize].paint(g, spriteMap[tileAppearance], xTile * SPRITE_WIDTH[spriteSize], yTile * SPRITE_HEIGHT[spriteSize]);
+            sprites.paint(g, spriteMap[tileAppearance], xTile * SPRITE_WIDTH, yTile * SPRITE_HEIGHT);
         }
         backgroundTilesToRepaint.clear();
     }
@@ -385,28 +381,28 @@ class LodeRunnerStage {
         int tx = 0, ty = 0;
         if (isLoaded && hero != null) {
             // Compute screen translation, based on hero's position
-            if (w0 >= STAGE_WIDTH * SPRITE_WIDTH[spriteSize]) {
-                tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH[spriteSize]) / 2;
+            if (w0 >= STAGE_WIDTH * SPRITE_WIDTH) {
+                tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH) / 2;
             } else if (hero.getCenterX() < w0 / 2) {
                 tx = 0;
-            } else if (hero.getCenterX() > STAGE_WIDTH * SPRITE_WIDTH[spriteSize] - w0 / 2) {
-                tx = w0 - STAGE_WIDTH * SPRITE_WIDTH[spriteSize];
+            } else if (hero.getCenterX() > STAGE_WIDTH * SPRITE_WIDTH - w0 / 2) {
+                tx = w0 - STAGE_WIDTH * SPRITE_WIDTH;
             } else {
                 tx = w0 / 2 - hero.getCenterX();
             }
-            if (h0 >= STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize]) {
-                ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize]) / 2;
+            if (h0 >= STAGE_HEIGHT * SPRITE_HEIGHT) {
+                ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT) / 2;
             } else if (hero.getCenterY() < h0 / 2) {
                 ty = 0;
-            } else if (hero.getCenterY() > STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize] - h0 / 2) {
-                ty = h0 - STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize];
+            } else if (hero.getCenterY() > STAGE_HEIGHT * SPRITE_HEIGHT - h0 / 2) {
+                ty = h0 - STAGE_HEIGHT * SPRITE_HEIGHT;
             } else {
                 ty = h0 / 2 - hero.getCenterY();
             }
         } else {
             // Center stage
-            tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH[spriteSize]) / 2;
-            ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize]) / 2;
+            tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH) / 2;
+            ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT) / 2;
         }
         g.translate(tx, ty);
     }
@@ -419,22 +415,19 @@ class LodeRunnerStage {
     public void paint(Graphics g) {
         // Prepare the screen (clear, center)
         g.setColor(0);
-        if (spriteSize == SPRITE_NORMAL && (!isLoaded || backgroundImage == null)) {
+        if (!isLoaded || backgroundImage == null) {
             g.fillRect(0, 0, g.getClipWidth(), g.getClipHeight());
         }
         centerScreen(g);
         // deleting the message when hero is at the top
         if (isMessageAtTop()) {
-            int blockSize = SPRITE_WIDTH[SPRITE_NORMAL] ;
+            int blockSize = SPRITE_WIDTH ;
             g.fillRect(hero.getCenterX() - blockSize, hero.getY() - blockSize, 2 * blockSize, blockSize);
         }
 
-        if (spriteSize == SPRITE_SMALL) {
-            g.fillRect(0, 0, STAGE_WIDTH * SPRITE_WIDTH[spriteSize], STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize]);
-        }
         if (isLoaded) {
             // Paint tiles, using background Image if available
-            if (spriteSize == SPRITE_NORMAL && backgroundImage != null) {
+            if (backgroundImage != null) {
                 repaintBackgroundTiles();
                 g.drawImage(backgroundImage, 0, 0, Graphics.TOP | Graphics.LEFT);
             } else {
@@ -442,11 +435,6 @@ class LodeRunnerStage {
             }
             // Paint sprites
             paintSprites(g);
-        }
-        // When drawing in small size, frame the stage by a white rectangle
-        if (spriteSize == SPRITE_SMALL) {
-            g.setColor(0x00ffffff);
-            g.drawRect(0, 0, STAGE_WIDTH * SPRITE_WIDTH[spriteSize], STAGE_HEIGHT * SPRITE_HEIGHT[spriteSize]);
         }
         // Revert translation
         g.translate(-g.getTranslateX(), -g.getTranslateY());

@@ -200,7 +200,7 @@ class LodeRunnerHero extends LodeRunnerCharacter {
 
     /** Render the floating message above this hero */
     private void paintMessage(Graphics g) {
-        stage.font.drawString(g, currentMessage, getCenterX(), getY() - (DELAY_MESSAGE - delayMessage) * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize] / DELAY_MESSAGE / 2, Graphics.HCENTER | Graphics.BOTTOM);
+        stage.font.drawString(g, currentMessage, getCenterX(), getY() - (DELAY_MESSAGE - delayMessage) * LodeRunnerStage.SPRITE_HEIGHT / DELAY_MESSAGE / 2, Graphics.HCENTER | Graphics.BOTTOM);
     }
 
     /** Render this hero */
@@ -235,16 +235,16 @@ class LodeRunnerHero extends LodeRunnerCharacter {
             }
             int xFire = xTile + (lookLeft ? -1 : +1);
             if (frameBlaster != 0) {
-                stage.sprites[stage.spriteSize].paint(g, frameBlaster, xFire * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize], yTile * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize]);
+                stage.sprites.paint(g, frameBlaster, xFire * LodeRunnerStage.SPRITE_WIDTH, yTile * LodeRunnerStage.SPRITE_HEIGHT);
             }
             if (frameMelting != 0) {
-                stage.sprites[stage.spriteSize].paint(g, frameMelting, xFire * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize], (yTile + 1) * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize]);
+                stage.sprites.paint(g, frameMelting, xFire * LodeRunnerStage.SPRITE_WIDTH, (yTile + 1) * LodeRunnerStage.SPRITE_HEIGHT);
             }
         }
         // paint hero itself
         boolean isVisible = super.paint(g);
         // Render a floating message, if any
-        if (delayMessage > 0 && stage.spriteSize == LodeRunnerStage.SPRITE_NORMAL) {
+        if (delayMessage > 0 ) {
            paintMessage(g);
         }
         return isVisible;

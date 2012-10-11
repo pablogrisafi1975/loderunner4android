@@ -55,6 +55,6 @@ class LodeRunnerHole {
         if (frameHole == 0) {
             return false;
         }
-        return stage.sprites[stage.spriteSize].paint(g, frameHole, xTile * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize], yTile * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize]);
+        return stage.sprites.paint(g, frameHole, xTile * LodeRunnerStage.SPRITE_WIDTH, yTile * LodeRunnerStage.SPRITE_HEIGHT);
     }
 }
