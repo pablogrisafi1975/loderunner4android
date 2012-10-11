@@ -285,8 +285,6 @@ public class ViewManager {
 				});	
 			};
 		});
-		
-		
 	}
 	
 
@@ -312,7 +310,7 @@ public class ViewManager {
 		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - bigButtonSize, MARGIN * 2 + bigButtonSize, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						showClearDoneDialog();
+						showClearDoneDialog("Are you sure about clearing all done levels?");
 					}
 				});		
 		
@@ -358,7 +356,10 @@ public class ViewManager {
 		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + bigButtonSize )/2 + 2 * MARGIN + bigButtonSize , afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						gameManager.unsolvedLevel();
+						int nextLevelNotDone = gameManager.nextLevelNotDone();
+						if(nextLevelNotDone == -1){
+							showClearDoneDialog("All levels done! Do you want to clear and start over?");
+						}
 					}
 				});
 
@@ -366,9 +367,9 @@ public class ViewManager {
 
 
 	
-	private void showClearDoneDialog() {
+	private void showClearDoneDialog(String message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this.lodeRunnerActivity);
-		builder.setTitle("Are you sure about clearing all done levels?").setMessage("Warning!");		
+		builder.setMessage(message).setTitle("Warning!");		
 		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	              gameManager.clearDone();
@@ -399,8 +400,6 @@ public class ViewManager {
 		button.setOnLongClickListener(filteredLongClickListener);
 	}
 	
-
-	
 	
 	private void reClickStart(final Button button){
 		Thread t = new Thread(new Runnable() {			
@@ -408,7 +407,7 @@ public class ViewManager {
 				button.setClickable(false);
 				while(button.isPressed()){
 					try {
-						Thread.sleep(2000);
+						Thread.sleep(1500);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}					

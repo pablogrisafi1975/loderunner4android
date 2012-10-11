@@ -322,7 +322,7 @@ public class LodeRunnerDrawingThread extends Thread {
 		}
 	}
 
-	public void nextLevelNotDone() {
+	public int nextLevelNotDone() {
 		int nextLevelNotDone = -1;
 		for (int i = level + 1; i < LodeRunnerStage.MAX_LEVELS; i++) {
 			if (levelStatuses[i] == STATUS_NOT_DONE) {
@@ -338,12 +338,10 @@ public class LodeRunnerDrawingThread extends Thread {
 				}
 			}
 		}
-		if (nextLevelNotDone == -1) {
-			//pauseMessage = "All levels done!";
-		} else {
-			//pauseMessage = null;
+		if (nextLevelNotDone != -1) {
 			loadNewLevel(nextLevelNotDone);
 		}
+		return nextLevelNotDone;
 	}
 
 	/**
@@ -447,6 +445,9 @@ public class LodeRunnerDrawingThread extends Thread {
 					status = newStatus;
 				}
 			}
+			//just for testing remove!!!!
+			//status = i == 0 ? STATUS_NOT_DONE: STATUS_DONE;
+
 			levelStatuses[i] = status;
 		}
 

@@ -105,8 +105,8 @@ public class GameManager {
 		
 	}
 
-	public void unsolvedLevel() {
-		lodeRunnerDrawingThread.nextLevelNotDone();		
+	public int nextLevelNotDone() {
+		return lodeRunnerDrawingThread.nextLevelNotDone();		
 	}
 
 	public void updateLevelInfo() {
