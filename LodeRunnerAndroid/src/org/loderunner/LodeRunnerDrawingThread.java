@@ -292,7 +292,7 @@ public class LodeRunnerDrawingThread extends Thread {
 
 		/** Heartbeat */
 		public void run() {
-			// Loop on every vilain
+			// Loop on every villain
 			if (stage != null && stage.isLoaded) {
 				for (LodeRunnerVillain lodeRunnerVillain : stage.villains) {
 					lodeRunnerVillain.heartBeat();
