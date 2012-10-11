@@ -16,7 +16,7 @@ import android.util.Log;
 /**
  * A Lode Runner stage or level is composed of
  * - a tiles array describing the stage landscape
- * - a Lode Runner hero and an array of Lode Runner vilains
+ * - a Lode Runner hero and an array of Lode Runner villains
  */
 class LodeRunnerStage {
 
@@ -48,7 +48,7 @@ class LodeRunnerStage {
     public static final int TILE_EXIT = 6;
     /** Core tile type constant for chest tile */
     public static final int TILE_CHEST = 7;
-    /** Core tile type constant for vilain initial position (only valid when loading from resource file) */
+    /** Core tile type constant for villain initial position (only valid when loading from resource file) */
     public static final int TILE_MONK = 8;
     /** Core tile type constant for hero initial position (only valid when loading from resource file) */
     public static final int TILE_HERO = 9;
@@ -56,7 +56,7 @@ class LodeRunnerStage {
     public static final int TILE_OUTSIDE = 10;
     /** Volatile tile type constant used for brick just being digged (still considered full) */
     public static final int TILE_HOLE_FULL = 11;
-    /** Volatile tile type constant used for brick completely digged (considered empty, can trap vilains) */
+    /** Volatile tile type constant used for brick completely digged (considered empty, can trap villains) */
     public static final int TILE_HOLE_EMPTY = 12;
     /** Tiles array describing the stage landscape. Values are tile type TILE_* constants. */
     private int[] tiles = new int[STAGE_WIDTH * STAGE_HEIGHT];
@@ -84,7 +84,7 @@ class LodeRunnerStage {
     public boolean exitEnabled = false;
     /** Flag set if the hero has died and this stage is over */
     public boolean endHeroDied = false;
-    /** Flag set if the hero has succesfully completed this stage */
+    /** Flag set if the hero has successfully completed this stage */
     public boolean endCompleted = false;
     /** Stage background pixel image */
     private Image backgroundImage = null;
@@ -97,7 +97,7 @@ class LodeRunnerStage {
     private Thread loadingThread = null;
 	private LevelInfoChangedListener levelInfoChangedListener;
 
-    /** Initiatialize an empty stage. Load the sprites resources. */
+    /** Initialize an empty stage. Load the sprites resources. */
     LodeRunnerStage(InputStream fontInputStream, InputStream tilesInputStream) {
         //this.canvas = canvas;
         try {
