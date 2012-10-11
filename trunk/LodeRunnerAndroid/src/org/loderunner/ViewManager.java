@@ -279,11 +279,10 @@ public class ViewManager {
 							doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 4);
 							doneTextView.setVisibility(View.VISIBLE);
 						}
-						doneTextView.invalidate();						
+						doneTextView.invalidate();
+						lodeRunnerActivity.onMenu();
 					};
 				});	
-				lodeRunnerActivity.onMenu();
-				
 			};
 		});
 		
