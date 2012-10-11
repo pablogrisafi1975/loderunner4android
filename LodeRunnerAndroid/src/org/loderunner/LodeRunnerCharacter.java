@@ -109,26 +109,26 @@ abstract class LodeRunnerCharacter {
 
     /** Get the X center position of this character in pixels */
     public int getCenterX() {
-        return (6 * xTile + xAdjust + 3) * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize] / 6;
+        return (6 * xTile + xAdjust + 3) * LodeRunnerStage.SPRITE_WIDTH/ 6;
     }
 
     /** Get the Y center position of this character in pixels */
     public int getCenterY() {
-        return (5 * yTile + yAdjust + 3) * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize] / 5;
+        return (5 * yTile + yAdjust + 3) * LodeRunnerStage.SPRITE_HEIGHT / 5;
     }
 
     /** Get the X left position of this character in pixels */
     public int getX() {
         if (xDelta >= 0) {
-            return (6 * xTile + xAdjust + (xAdjust + 6) % 2) * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize] / 6;
+            return (6 * xTile + xAdjust + (xAdjust + 6) % 2) * LodeRunnerStage.SPRITE_WIDTH / 6;
         } else {
-            return (6 * xTile + xAdjust - (6 - xAdjust) % 2) * LodeRunnerStage.SPRITE_WIDTH[stage.spriteSize] / 6;
+            return (6 * xTile + xAdjust - (6 - xAdjust) % 2) * LodeRunnerStage.SPRITE_WIDTH / 6;
         }
     }
 
     /** Get the Y top position of this character in pixels */
     public int getY() {
-        return (5 * yTile + yAdjust) * LodeRunnerStage.SPRITE_HEIGHT[stage.spriteSize] / 5;
+        return (5 * yTile + yAdjust) * LodeRunnerStage.SPRITE_HEIGHT / 5;
     }
 
     /** Set the given move as current for this character. Compute directions for that move. */
@@ -344,6 +344,6 @@ abstract class LodeRunnerCharacter {
     /** Render this character */
     public boolean paint(Graphics g) {
         // Paint appropriate sprite
-        return stage.sprites[stage.spriteSize].paint(g, getFrame(), getX(), getY());
+        return stage.sprites.paint(g, getFrame(), getX(), getY());
     }
 }
