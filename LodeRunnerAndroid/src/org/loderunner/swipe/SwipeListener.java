@@ -12,4 +12,6 @@ public interface SwipeListener {
 
 	void top2bottom(View v);
 
+	void tap(View v);
+
 }
