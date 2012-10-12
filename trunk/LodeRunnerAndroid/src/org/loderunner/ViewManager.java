@@ -3,8 +3,16 @@ package org.loderunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.loderunner.swipe.SwipeDetector;
+import org.loderunner.swipe.SwipeListener;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.gesture.Prediction;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -73,6 +81,31 @@ public class ViewManager {
 				relativeLayout.getWindowVisibleDisplayFrame(outRect);
 				int drawingWidth = outRect.width();
 				int drawingHeight = calculateDrawingHeigth(outRect);
+				
+				SwipeDetector swipeDetector = new SwipeDetector(new SwipeListener() {
+					
+					public void top2bottom(View v) {
+						gameManager.down();
+						
+					}
+					
+					public void right2left(View v) {
+						gameManager.left();
+						
+					}
+					
+					public void left2right(View v) {
+						gameManager.right();
+						
+					}
+					
+					public void bottom2top(View v) {
+						gameManager.up();
+						
+					}
+				});
+
+				relativeLayout.setOnTouchListener(swipeDetector);
 
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
 
