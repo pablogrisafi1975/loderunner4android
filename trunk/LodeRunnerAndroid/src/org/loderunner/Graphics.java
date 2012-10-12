@@ -47,8 +47,7 @@ public class Graphics {
 	public void drawRegion(Image src, int x_src, int y_src, int width, int height, int transform, int x_dest,
 			int y_dest, int anchor) {
 		Bitmap bitmap = src.getBitmap(x_src, y_src, width, height);
-		canvas.drawBitmap(bitmap, x_dest, y_dest, null);
-
+		canvas.drawBitmap(bitmap, x_dest, y_dest , null);
 	}
 
 
@@ -86,25 +85,21 @@ public class Graphics {
 
 	}
 	
-	public void translate(int tx, int ty) {
-		// TODO Auto-generated method stub
-
+	public void translate(int x, int y) {
+		canvas.translate(x, y);
 	}	
 
 	public int getTranslateX() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public int getTranslateY() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	// g.drawImage(backgroundImage, 0, 0, Graphics.TOP | Graphics.LEFT);
 	public void drawImage(Image img, int x, int y, int anchor) {
 		canvas.drawBitmap(img.getBitmap(), x, y, null);
-
 	}
 
 

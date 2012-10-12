@@ -38,8 +38,6 @@ public class ViewManager {
 	private static final String TEXT_PREV = "Prev.";
 	private static final String TEXT_NEXT = "Next";
 	private static final String TEXT_NEXT_NOT_DONE = "Next not\nDone";
-	private static int LODE_RUNNER_VIEW_WIDTH = 336;
-	private static int LODE_RUNNER_VIEW_HEIGHT = 176;
 	private static int MARGIN = 2;
 	private List<Button> actionButtons;
 	private List<Button> menuButtons;
@@ -78,17 +76,17 @@ public class ViewManager {
 
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
 
-				int smallButtonSize = (drawingHeight - LODE_RUNNER_VIEW_HEIGHT - MARGIN * 3) / 2;
+				int smallButtonSize = (drawingHeight - LodeRunnerStage.STAGE_HEIGHT_PIXELS - MARGIN * 3) / 2;
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "squareButtonSize:" + smallButtonSize);
-				int bigButtonSize = (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2 - 2 * MARGIN;
+				int bigButtonSize = (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 - 2 * MARGIN;
 				int lastButtonLine = drawingHeight - smallButtonSize - MARGIN;
 
 
-				addView(lodeRunnerView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
-						LODE_RUNNER_VIEW_HEIGHT);
+				addView(lodeRunnerView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS ,
+						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
 				
-				addView(doneTextView, (drawingWidth - LODE_RUNNER_VIEW_WIDTH) / 2, 0, LODE_RUNNER_VIEW_WIDTH,
-						LODE_RUNNER_VIEW_HEIGHT);
+				addView(doneTextView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS,
+						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
 
 				createActionWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
 				
@@ -196,7 +194,7 @@ public class ViewManager {
 				});		
 
 		// up
-		int upDownX = (drawingWidth + LODE_RUNNER_VIEW_WIDTH) / 2 + MARGIN;
+		int upDownX = (drawingWidth + LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 + MARGIN;
 		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * smallButtonSize, smallButtonSize,
 				true, new View.OnClickListener() {
 					public void onClick(View v) {
@@ -259,7 +257,7 @@ public class ViewManager {
 						
 						doneTextView.setVisibility(levelInfo.isDone() ? View.VISIBLE : View.INVISIBLE);
 						doneTextView.setText("Done!");
-						doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 2);
+						doneTextView.setTextSize(LodeRunnerStage.STAGE_HEIGHT_PIXELS / 2);
 						doneTextView.setTextColor(0xFF00FF00);
 						doneTextView.invalidate();		
 						
@@ -276,7 +274,7 @@ public class ViewManager {
 							doneTextView.setVisibility(View.INVISIBLE);
 						}else{					
 							doneTextView.setText(message);
-							doneTextView.setTextSize(LODE_RUNNER_VIEW_HEIGHT / 4);
+							doneTextView.setTextSize(LodeRunnerStage.STAGE_HEIGHT_PIXELS / 4);
 							doneTextView.setVisibility(View.VISIBLE);
 						}
 						doneTextView.invalidate();
@@ -314,7 +312,7 @@ public class ViewManager {
 					}
 				});		
 		
-		int afterViewY = LODE_RUNNER_VIEW_HEIGHT + MARGIN;
+		int afterViewY = LodeRunnerStage.STAGE_HEIGHT_PIXELS + MARGIN;
 		
 		addButton(TEXT_FIRST, (drawingWidth - bigButtonSize)/2 - 2 * (bigButtonSize + MARGIN), afterViewY, bigButtonSize, false,
 				new View.OnClickListener() {

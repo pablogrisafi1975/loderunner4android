@@ -32,6 +32,10 @@ class LodeRunnerStage {
     public static final int SPRITE_WIDTH = 12;
     /** Tile/sprite height in pixels */
     public static final int SPRITE_HEIGHT = 11;
+    
+    public static final int STAGE_WIDTH_PIXELS = STAGE_WIDTH * SPRITE_WIDTH;
+    public static final int STAGE_HEIGHT_PIXELS = STAGE_HEIGHT * SPRITE_HEIGHT;
+    
     /** Core tile type constant for void/empty tile */
     public static final int TILE_VOID = 0;
     /** Core tile type constant for diggable brick tile */
@@ -106,7 +110,7 @@ class LodeRunnerStage {
             font = new GameFont(fontInputStream, 3, 5, "0123456789/");
             sprites = new GameSprite(tilesInputStream, SPRITE_WIDTH, SPRITE_HEIGHT, 0, 0);
             // If enough memory, use a background image to speed up normal stage rendering
-            backgroundImage = Image.createImage(STAGE_WIDTH * SPRITE_WIDTH, STAGE_HEIGHT * SPRITE_HEIGHT);
+            backgroundImage = Image.createImage(STAGE_WIDTH_PIXELS, STAGE_HEIGHT_PIXELS);
             backgroundTilesToRepaint = Collections.synchronizedList(new ArrayList<Integer>());
         } catch (Exception e) {
             Log.e(LodeRunnerStage.class.getCanonicalName(), "Inicialization error", e);
@@ -384,28 +388,28 @@ class LodeRunnerStage {
         int tx = 0, ty = 0;
         if (isLoaded && hero != null) {
             // Compute screen translation, based on hero's position
-            if (w0 >= STAGE_WIDTH * SPRITE_WIDTH) {
-                tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH) / 2;
+            if (w0 >= STAGE_WIDTH_PIXELS) {
+                tx = (w0 - STAGE_WIDTH_PIXELS) / 2;
             } else if (hero.getCenterX() < w0 / 2) {
                 tx = 0;
-            } else if (hero.getCenterX() > STAGE_WIDTH * SPRITE_WIDTH - w0 / 2) {
-                tx = w0 - STAGE_WIDTH * SPRITE_WIDTH;
+            } else if (hero.getCenterX() > STAGE_WIDTH_PIXELS - w0 / 2) {
+                tx = w0 - STAGE_WIDTH_PIXELS;
             } else {
                 tx = w0 / 2 - hero.getCenterX();
             }
-            if (h0 >= STAGE_HEIGHT * SPRITE_HEIGHT) {
-                ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT) / 2;
+            if (h0 >= STAGE_HEIGHT_PIXELS) {
+                ty = (h0 - STAGE_HEIGHT_PIXELS) / 2;
             } else if (hero.getCenterY() < h0 / 2) {
                 ty = 0;
-            } else if (hero.getCenterY() > STAGE_HEIGHT * SPRITE_HEIGHT - h0 / 2) {
-                ty = h0 - STAGE_HEIGHT * SPRITE_HEIGHT;
+            } else if (hero.getCenterY() > STAGE_HEIGHT_PIXELS - h0 / 2) {
+                ty = h0 - STAGE_HEIGHT_PIXELS;
             } else {
                 ty = h0 / 2 - hero.getCenterY();
             }
         } else {
             // Center stage
-            tx = (w0 - STAGE_WIDTH * SPRITE_WIDTH) / 2;
-            ty = (h0 - STAGE_HEIGHT * SPRITE_HEIGHT) / 2;
+            tx = (w0 - STAGE_WIDTH_PIXELS) / 2;
+            ty = (h0 - STAGE_HEIGHT_PIXELS) / 2;
         }
         g.translate(tx, ty);
     }
