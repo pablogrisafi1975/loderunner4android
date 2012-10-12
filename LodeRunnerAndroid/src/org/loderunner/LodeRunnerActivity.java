@@ -3,6 +3,7 @@ package org.loderunner;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.widget.RelativeLayout;
@@ -22,19 +23,7 @@ public class LodeRunnerActivity extends Activity {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-
-		RelativeLayout relativeLayout = new RelativeLayout(this);
-		relativeLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		setContentView(relativeLayout);
-		
-		final LodeRunnerView lodeRunnerView = new LodeRunnerView(LodeRunnerActivity.this.getApplicationContext(),
-				null);	
-		gameManager = new GameManager(lodeRunnerView.getDrawingThread());
-		viewManager = new ViewManager(this, gameManager, relativeLayout, lodeRunnerView);
-		// this needs to be post'ed because the actual size of the window
-		// is not known until it is drawn
-		relativeLayout.post(viewManager.init());
-
+		Log.i(LodeRunnerActivity.class.getCanonicalName(), "onCreate");
 
 	}
 	
@@ -98,16 +87,36 @@ public class LodeRunnerActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return false;
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		RelativeLayout relativeLayout = new RelativeLayout(this);
+		relativeLayout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		setContentView(relativeLayout);
+		
+		final LodeRunnerView lodeRunnerView = new LodeRunnerView(LodeRunnerActivity.this.getApplicationContext(),
+				null);	
+		gameManager = new GameManager(lodeRunnerView.getDrawingThread());
+		viewManager = new ViewManager(this, gameManager, relativeLayout, lodeRunnerView);
+		// this needs to be post'ed because the actual size of the window
+		// is not known until it is drawn
+		relativeLayout.post(viewManager.init());
+		Log.i(LodeRunnerActivity.class.getCanonicalName(), "onStart");
+		
+	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		onMenu();
+		Log.i(LodeRunnerActivity.class.getCanonicalName(), "onPause");
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		Log.i(LodeRunnerActivity.class.getCanonicalName(), "onDestroy");
 	}
 
 
