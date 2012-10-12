@@ -71,28 +71,23 @@ public class LodeRunnerDrawingThread extends Thread {
 		return height;
 	}
 
-	private static LodeRunnerDrawingThread instance;
 
 	public LodeRunnerDrawingThread(SurfaceHolder holder, Context context, int width, int heigth) {
-		instance = this;
 		this.context = context;
 		this.width = width;
 		this.height = heigth;
 		this.holder = holder;
 		InputStream fontInputStream = this.context.getResources().openRawResource(R.raw.font);
 		InputStream tilesInputStream = this.context.getResources().openRawResource(R.raw.tiles12x11);
-		stage = new LodeRunnerStage(fontInputStream, tilesInputStream);		
+		stage = new LodeRunnerStage(fontInputStream, tilesInputStream, this);		
 		recoverStatus();
-		stage.loadFromResource(openBinInputStream());
+		stage.loadFromResource(openBinInputStream(), level);
 	}
 
 	private InputStream openBinInputStream() {
 		return this.context.getResources().openRawResource(R.raw.loderunnerbin);
 	}
 
-	public static LodeRunnerDrawingThread getInstance() {
-		return instance;
-	}
 
 	public void setRunning(boolean running) {
 		this.running = running;
@@ -225,7 +220,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	public void loadNewLevel(int newLevel) {
 		this.level = newLevel;
 		try {
-			this.stage.loadFromResource(openBinInputStream());
+			this.stage.loadFromResource(openBinInputStream(), newLevel);
 			updateLevelInfo();
 		} catch (Exception e) {
 			Log.e(LodeRunnerDrawingThread.class.getCanonicalName(), "Error loading level", e);
@@ -371,7 +366,7 @@ public class LodeRunnerDrawingThread extends Thread {
 		}
 		// Load appropriate stage
 		try {
-			stage.loadFromResource(openBinInputStream());
+			stage.loadFromResource(openBinInputStream(), level);
 		} catch (Exception e) {
 		}
 		needsRepaint = REPAINT_ALL;

@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -30,7 +29,7 @@ public class LodeRunnerActivity extends Activity {
 		
 		final LodeRunnerView lodeRunnerView = new LodeRunnerView(LodeRunnerActivity.this.getApplicationContext(),
 				null);	
-		gameManager = new GameManager();
+		gameManager = new GameManager(lodeRunnerView.getDrawingThread());
 		viewManager = new ViewManager(this, gameManager, relativeLayout, lodeRunnerView);
 		// this needs to be post'ed because the actual size of the window
 		// is not known until it is drawn
