@@ -103,6 +103,10 @@ public class ViewManager {
 						gameManager.up();
 						
 					}
+
+					public void tap(View v) {
+						gameManager.dig();						
+					}
 				});
 
 				relativeLayout.setOnTouchListener(swipeDetector);
