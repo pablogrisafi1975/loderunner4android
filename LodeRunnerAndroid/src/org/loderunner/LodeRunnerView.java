@@ -9,8 +9,6 @@ import android.view.SurfaceView;
 
 public class LodeRunnerView extends SurfaceView implements Callback {
 
-	
-
 	private LodeRunnerDrawingThread drawingThread;
 
 	public LodeRunnerView(Context context, AttributeSet attrs) {
@@ -45,6 +43,11 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 			}
 		}
 	}
+
+	public LodeRunnerDrawingThread getDrawingThread() {
+		return drawingThread;
+	}
+
 
 	
 

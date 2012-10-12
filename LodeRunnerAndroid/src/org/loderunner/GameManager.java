@@ -10,11 +10,13 @@ package org.loderunner;
  */
 public class GameManager {
 	// TODO make a class create all instances of everything
-	public GameManager() {
-		this.lodeRunnerDrawingThread = LodeRunnerDrawingThread.getInstance();
+	private final LodeRunnerDrawingThread lodeRunnerDrawingThread;
+	
+	public GameManager(LodeRunnerDrawingThread lodeRunnerDrawingThread) {
+		this.lodeRunnerDrawingThread = lodeRunnerDrawingThread;
 	}
 
-	private final LodeRunnerDrawingThread lodeRunnerDrawingThread;
+	
 
 	public void pause() {
 		if(lodeRunnerDrawingThread.isPaused){

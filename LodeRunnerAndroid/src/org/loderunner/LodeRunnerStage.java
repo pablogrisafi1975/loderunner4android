@@ -96,10 +96,11 @@ class LodeRunnerStage {
     /** Stage loading is done in a separated thread */
     private Thread loadingThread = null;
 	private LevelInfoChangedListener levelInfoChangedListener;
+	private LodeRunnerDrawingThread drawingThread;
 
     /** Initialize an empty stage. Load the sprites resources. */
-    LodeRunnerStage(InputStream fontInputStream, InputStream tilesInputStream) {
-        //this.canvas = canvas;
+    public LodeRunnerStage(InputStream fontInputStream, InputStream tilesInputStream, LodeRunnerDrawingThread drawingThread) {
+        this.drawingThread = drawingThread;
         try {
             // Load game resource images (font and sprites)
             font = new GameFont(fontInputStream, 3, 5, "0123456789/");
@@ -116,11 +117,15 @@ class LodeRunnerStage {
     /** Loading thread for asynchronous stage building */
     private class LoadingThread extends Thread {
 
-        public LoadingThread(InputStream inputStreamBin) {
+    	private final InputStream inputStreamBin;
+    	private final int level;
+    	
+        public LoadingThread(InputStream inputStreamBin, int level) {
 			this.inputStreamBin = inputStreamBin;
+			this.level = level;
 		}
 
-		private final InputStream inputStreamBin;
+		
 
 		/** Entry point of this asynchronous loading thread */
         public void run() {
@@ -132,7 +137,7 @@ class LodeRunnerStage {
                 // Each tile is encoded on 4 bits
                 DataInput input = new DataInputStream(inputStreamBin);
                 // Read level's buffer
-                int level = LodeRunnerDrawingThread.getInstance().level % MAX_LEVELS;//  canvas.level % MAX_LEVELS;
+                int level = this.level % MAX_LEVELS;//  canvas.level % MAX_LEVELS;
                 byte[] buffer = new byte[STAGE_WIDTH * STAGE_HEIGHT / 2];
                 input.skipBytes(buffer.length * level);
                 input.readFully(buffer);
@@ -186,13 +191,12 @@ class LodeRunnerStage {
 				}
             }
             loadingThread = null;
-            //canvas.needsRepaint = LodeRunnerDrawingThread.REPAINT_ALL;
-            LodeRunnerDrawingThread.getInstance().needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;            
+            drawingThread.needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;            
         }
     }
 
     /** Load a stage from a given level in the levels resource file */
-    public void loadFromResource(InputStream binInputStream) {
+    public void loadFromResource(InputStream binInputStream, int level) {
         // Abort previous loading attempt
         while (loadingThread != null) {
             isLoaded = true;
@@ -210,7 +214,7 @@ class LodeRunnerStage {
             backgroundTilesToRepaint.clear();
         }
         // Asynchroneously load the stage
-        loadingThread = new LoadingThread(binInputStream);
+        loadingThread = new LoadingThread(binInputStream, level);
         loadingThread.start();        
     }
 
