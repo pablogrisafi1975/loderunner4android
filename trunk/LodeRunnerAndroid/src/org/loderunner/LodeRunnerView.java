@@ -2,6 +2,7 @@ package org.loderunner;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -14,10 +15,9 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 
 	public LodeRunnerView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
 		// register our interest in hearing about changes to our surface
 		SurfaceHolder holder = getHolder();
-		drawingThread = new LodeRunnerDrawingThread(holder , context, this.getWidth(), this.getHeight());
+		drawingThread = new LodeRunnerDrawingThread(holder , this.getContext(), this.getWidth(), this.getHeight());		
 		holder.addCallback(this);
 		setFocusable(true);
 
@@ -33,6 +33,7 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		Log.d(LodeRunnerView.class.getCanonicalName(), "surfaceDestroyed");
 		boolean retry = true;
 		drawingThread.setRunning(false);
 		while (retry) {
@@ -40,6 +41,7 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 				drawingThread.join();
 				retry = false;
 			} catch (InterruptedException e) {
+				Log.e(LodeRunnerView.class.getCanonicalName(), "Error detroying surface", e);
 			}
 		}
 	}

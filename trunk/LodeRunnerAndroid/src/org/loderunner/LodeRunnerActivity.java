@@ -38,6 +38,7 @@ public class LodeRunnerActivity extends Activity {
 
 
 	}
+	
 
 
 	
@@ -49,7 +50,8 @@ public class LodeRunnerActivity extends Activity {
 	public void onPlay() {	
 		viewManager.showActionWidgets();
 		gameManager.play();
-	}
+	}	
+	
 
 
 
@@ -98,6 +100,16 @@ public class LodeRunnerActivity extends Activity {
 		return false;
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		onMenu();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
 
 
 }

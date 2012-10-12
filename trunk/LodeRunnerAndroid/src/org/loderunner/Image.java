@@ -36,7 +36,7 @@ public class Image {
 	}
 	
 	public static Image createImage(int width, int height) {
-		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888 );
+		Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
 		return new Image(bitmap);
 	}
 

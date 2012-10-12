@@ -211,8 +211,7 @@ class LodeRunnerStage {
         }
         // Asynchroneously load the stage
         loadingThread = new LoadingThread(binInputStream);
-        //loadingThread.start();
-        loadingThread.run();
+        loadingThread.start();        
     }
 
     /** Get tile array index from x and y position of the tile. */
@@ -364,10 +363,10 @@ class LodeRunnerStage {
 
     /** Render the stage's sprites (hero and vilains) */
     public void paintSprites(Graphics g) {
-        for (LodeRunnerHole lodeRunnerHole : holes) {
+        for (LodeRunnerHole lodeRunnerHole : holes.toArray(new LodeRunnerHole[holes.size()])) {
         	lodeRunnerHole.paint(g);
         }
-        for (LodeRunnerVillain lodeRunnerVilain : villains) {
+        for (LodeRunnerVillain lodeRunnerVilain : villains.toArray(new LodeRunnerVillain[villains.size()])) {
         	lodeRunnerVilain.paint(g);
         }
         if (hero != null) {
