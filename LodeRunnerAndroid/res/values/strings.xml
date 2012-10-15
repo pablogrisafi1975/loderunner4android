@@ -1,8 +1,4 @@
 <resources>
-
     <string name="app_name">LodeRunnerAndroid</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_lode_runner">LodeRunner</string>
-
+    <string name="title_activity_lode_runner">LodeRunnerAndroid</string>
 </resources>

@@ -195,7 +195,8 @@ class LodeRunnerStage {
 				}
             }
             loadingThread = null;
-            drawingThread.needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL;            
+            drawingThread.needsRepaint =  LodeRunnerDrawingThread.REPAINT_ALL; 
+            updateLevelInfo();
         }
     }
 
