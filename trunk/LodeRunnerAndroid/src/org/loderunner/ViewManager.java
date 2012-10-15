@@ -8,11 +8,6 @@ import org.loderunner.swipe.SwipeListener;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.gesture.Gesture;
-import android.gesture.GestureLibraries;
-import android.gesture.GestureLibrary;
-import android.gesture.GestureOverlayView;
-import android.gesture.Prediction;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;

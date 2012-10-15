@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    name="AutoIncrementVersion"
+    basedir="."
+    default="autoincrement" >
+
+    <description>
+        Ant file to autoincrement version in AndroidManifest.xml
+        Version will have the form major.minor.build.revision
+        You can choose mayor and minor, but
+        build is yyyyMMdd
+        and revision is HHmmss
+    </description>
+    <!-- set global properties for this build -->
+
+    <property name="major" value="1" />
+    <property name="minor" value="0" />
+    
+     <target name="autoincrement" >
+         <autoincrementVersionName />
+     </target>
+         
+
+    <macrodef name="autoincrementVersionName" >
+        <sequential>
+	        <tstamp>
+	            <format locale="en,US" pattern="yyyyMMdd.HHmmss" timezone="GMT+0" property="build-revision" />
+	        </tstamp>
+	        <property name="versionName" value="${major}.${minor}.${build-revision}"></property>
+	        <echo message="versionName = ${versionName}" > </echo>
+	        <replaceregexp file="AndroidManifest.xml"
+	               match='android:versionName=\".*\"'
+	               replace='android:versionName=\"${versionName}\"'
+	               byline="true"
+				/>
+        </sequential>
+    </macrodef>
+
+</project>
