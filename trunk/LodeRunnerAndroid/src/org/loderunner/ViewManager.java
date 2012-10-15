@@ -22,6 +22,15 @@ import android.widget.TextView;
 
 public class ViewManager {
 
+	private static final String SURE_CLEAR_ALL_LEVELS = "Are you sure about clearing all done levels?";
+	private static final String ALL_LEVELS_DONE_WANT_CLEAR = "All levels done! Do you want to clear and start over?";
+	private static final String BUTTON_NO = "No";
+	private static final String BUTTON_YES = "Yes";
+	private static final String TITLE_WARNING = "Warning!";
+	private static final String LABEL_VILAINS = "Foes: %d";
+	private static final String LABEL_COINS = "$: %d/%d";
+	private static final String LABEL_LIVES = "Lives: %d";
+	private static final String LABEL_LEVEL = "Level: %03d";
 	private RelativeLayout relativeLayout;
 	private LodeRunnerView lodeRunnerView;
 	private LodeRunnerActivity lodeRunnerActivity;
@@ -258,16 +267,12 @@ public class ViewManager {
 					}
 				});
 		//level info	
-		levelTextView.setText("level?");		
 		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize / 2);
 		
-		livesTextView.setText("lifes?");
 		addView(livesTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize / 2, bigButtonSize, smallButtonSize / 2);
 		 
-		coinsTextView.setText("coins?");		
 		addView(coinsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize , bigButtonSize, smallButtonSize / 2);
 		
-		villainsTextView.setText("vilains?");
 		addView(villainsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize * 3 / 2, bigButtonSize, smallButtonSize / 2);
 		
 		gameManager.setLevelChangeListener(new LevelInfoChangedListener() {
@@ -275,16 +280,16 @@ public class ViewManager {
 				Log.d(ViewManager.class.getCanonicalName(), "LevelInfo: " + levelInfo);
 				lodeRunnerActivity.runOnUiThread(new Runnable() {					
 					public void run() {
-						levelTextView.setText(String.format("Level: %03d", levelInfo.getNumber() + 1));						
+						levelTextView.setText(String.format(LABEL_LEVEL, levelInfo.getNumber() + 1));						
 						levelTextView.invalidate();
 
-						livesTextView.setText(String.format("Lives: %d", levelInfo.getLives()));						
+						livesTextView.setText(String.format(LABEL_LIVES, levelInfo.getLives()));						
 						livesTextView.invalidate();
 						
-						coinsTextView.setText(String.format("$: %d/%d", levelInfo.getCoinsPicked(), levelInfo.getCoinsTotal()));						
+						coinsTextView.setText(String.format(LABEL_COINS, levelInfo.getCoinsPicked(), levelInfo.getCoinsTotal()));						
 						coinsTextView.invalidate();
 						
-						villainsTextView.setText(String.format("Foes: %d", levelInfo.getVilains()));						
+						villainsTextView.setText(String.format(LABEL_VILAINS, levelInfo.getVilains()));						
 						villainsTextView.invalidate();			
 						
 						doneTextView.setVisibility(levelInfo.isDone() ? View.VISIBLE : View.INVISIBLE);
@@ -340,7 +345,7 @@ public class ViewManager {
 		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - bigButtonSize, MARGIN * 2 + bigButtonSize, bigButtonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
-						showClearDoneDialog("Are you sure about clearing all done levels?");
+						showClearDoneDialog(SURE_CLEAR_ALL_LEVELS);
 					}
 				});		
 		
@@ -388,7 +393,7 @@ public class ViewManager {
 					public void onClick(View v) {
 						int nextLevelNotDone = gameManager.nextLevelNotDone();
 						if(nextLevelNotDone == -1){
-							showClearDoneDialog("All levels done! Do you want to clear and start over?");
+							showClearDoneDialog(ALL_LEVELS_DONE_WANT_CLEAR);
 						}
 					}
 				});
@@ -399,13 +404,13 @@ public class ViewManager {
 	
 	private void showClearDoneDialog(String message) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this.lodeRunnerActivity);
-		builder.setMessage(message).setTitle("Warning!");		
-		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+		builder.setMessage(message).setTitle(TITLE_WARNING);		
+		builder.setPositiveButton(BUTTON_YES, new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	              gameManager.clearDone();
 	           }
 	       });
-		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+		builder.setNegativeButton(BUTTON_NO, new DialogInterface.OnClickListener() {
 	           public void onClick(DialogInterface dialog, int id) {
 	               dialog.cancel();
 	           }
