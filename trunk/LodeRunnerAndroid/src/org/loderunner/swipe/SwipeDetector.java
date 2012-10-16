@@ -11,6 +11,7 @@ public class SwipeDetector implements View.OnTouchListener {
 	static final int MIN_DISTANCE_TO_SWIPE = 50;
 	static final int MAX_DISTANCE_TO_CLICK = 5;
 	private float downX, downY, upX, upY;
+	private int drawingWidth;
 
 	public SwipeDetector(SwipeListener swipeListener) {
 		this.swipeListener = swipeListener;
@@ -36,11 +37,16 @@ public class SwipeDetector implements View.OnTouchListener {
 		swipeListener.bottom2top(v);
 	}
 	
-	public void onTap(View v) {
+	public void onTapLeft(View v) {
 		Log.i(logTag, "onTap!");
-		swipeListener.tap(v);
+		swipeListener.tapLeft(v);
 	}	
 
+	public void onTapRigth(View v) {
+		Log.i(logTag, "onTap!");
+		swipeListener.tapRigth(v);
+	}	
+	
 	public boolean onTouch(View v, MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN: {
@@ -86,12 +92,20 @@ public class SwipeDetector implements View.OnTouchListener {
 				v.performClick();
 			}
 			if(Math.abs(deltaY) < MAX_DISTANCE_TO_CLICK && Math.abs(deltaX) < MAX_DISTANCE_TO_CLICK){
-				this.onTap(v);
+				if(upX > drawingWidth / 2){
+					this.onTapRigth(v);
+				}else{
+					this.onTapLeft(v);
+				}
 				return true;
 			}
 		}
 		}
 		return false;
+	}
+
+	public void setDrawingWidth(int drawingWidth) {
+		this.drawingWidth = drawingWidth;		
 	}
 
 }
