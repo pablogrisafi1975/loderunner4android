@@ -1,6 +1,7 @@
 package org.loderunner;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -18,6 +19,7 @@ public class Graphics {
 	private Canvas canvas;
 	private Paint nextPaint;
 	private SparseArray<Paint> paints = new SparseArray<Paint>();
+	private int scale = 1;
 
 	public void setCanvas(Canvas canvas) {
 		this.canvas = canvas;
@@ -46,8 +48,9 @@ public class Graphics {
 	 */
 	public void drawRegion(Image src, int x_src, int y_src, int width, int height, int transform, int x_dest,
 			int y_dest, int anchor) {
-		Bitmap bitmap = src.getBitmap(x_src, y_src, width, height);
-		canvas.drawBitmap(bitmap, x_dest, y_dest , null);
+		Bitmap bitmap = src.getBitmap(x_src, y_src, width, height);		
+		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, width * scale, height * scale, false);
+		canvas.drawBitmap(scaledBitmap, x_dest * scale, y_dest * scale , null);
 	}
 
 
@@ -86,7 +89,7 @@ public class Graphics {
 	}
 	
 	public void translate(int x, int y) {
-		canvas.translate(x, y);
+		//canvas.translate(x, y);
 	}	
 
 	public int getTranslateX() {
@@ -99,7 +102,9 @@ public class Graphics {
 
 	// g.drawImage(backgroundImage, 0, 0, Graphics.TOP | Graphics.LEFT);
 	public void drawImage(Image img, int x, int y, int anchor) {
-		canvas.drawBitmap(img.getBitmap(), x, y, null);
+		Bitmap bitmap = img.getBitmap();
+		Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * scale,  bitmap.getHeight() * scale, false);
+		canvas.drawBitmap(scaledBitmap, x , y , null);
 	}
 
 
@@ -111,6 +116,14 @@ public class Graphics {
 	public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 		nextPaint.setStyle(Style.FILL);
 		canvas.drawRect(x, y, width, height, nextPaint);
+	}
+
+	public void setScale(int scale) {
+		if(this.scale != scale){
+			this.scale = scale;	
+			this.canvas.scale(scale,  scale);
+		}
+
 	}
 
 }

@@ -48,6 +48,10 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 		return drawingThread;
 	}
 
+	public void setScale(int scale) {
+		drawingThread.setScale(scale);	
+	}
+
 
 	
 
