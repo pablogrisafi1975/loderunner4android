@@ -76,59 +76,63 @@ public class ViewManager {
 			public void run() {
 				Rect outRect = new Rect();
 				relativeLayout.getWindowVisibleDisplayFrame(outRect);
+				
 				int drawingWidth = outRect.width();
 				int drawingHeight = calculateDrawingHeigth(outRect);
+				Log.d(ViewManager.class.getCanonicalName(), "drawingWidth:" + drawingWidth + " drawingHeight:" + drawingHeight);
 				
-				SwipeDetector swipeDetector = new SwipeDetector(new SwipeListener() {
-					
-					public void top2bottom(View v) {
-						gameManager.down();
-					}
-					
-					public void right2left(View v) {
-						gameManager.left();
-					}
-					
-					public void left2right(View v) {
-						gameManager.right();
-					}
-					
-					public void bottom2top(View v) {
-						gameManager.up();
-					}
-
-					public void tapLeft(View v) {
-						gameManager.digLeft();		
-					}
-
-					public void tapRigth(View v) {
-						gameManager.digRight();						
-					}
-				});
+				createSwipeDetector(drawingWidth);
 				
-				swipeDetector.setDrawingWidth(drawingWidth);
+				Rect gameRect = createGameView(drawingWidth);
 
-				relativeLayout.setOnTouchListener(swipeDetector);
-
-				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
-				int buttonSize = (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 - 2 * MARGIN;
-				addView(lodeRunnerView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS ,
-						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
+				int buttonSize = (drawingWidth - gameRect.width()) / 2 - 2 * MARGIN;
 				
-				addView(doneTextView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS,
-						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
-
 				createPlayWidgets(drawingWidth, buttonSize);
 				
-				createMenuWidgets(drawingWidth, buttonSize);
+				createMenuWidgets(drawingWidth, buttonSize, gameRect);
 				
-				createInfoLabels(drawingWidth, buttonSize);
+				createInfoLabels(drawingWidth, buttonSize, gameRect);
 				
 				gameManager.updateLevelInfo();
 
-			};
+			}
+
 		};
 	}
+	
+	private Rect createGameView(int drawingWidth) {
+		int gameX = 0;
+		int gameY = 0;
+		int gameWidth = 0;
+		int gameHeigth = 0;		
+		
+		if(drawingWidth <= 600){
+			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS;
+			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS;
+			lodeRunnerView.setScale(1);
+			Log.d(ViewManager.class.getCanonicalName(), "scale = 1");
+		}else if(drawingWidth <= 900){
+			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS * 2;
+			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS * 2;		
+			lodeRunnerView.setScale(2);
+			Log.d(ViewManager.class.getCanonicalName(), "scale = 2");
+		}else{
+			int scale =  LodeRunnerStage.STAGE_WIDTH_PIXELS / drawingWidth;
+			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS * scale;
+			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS * scale;		
+			lodeRunnerView.setScale(scale);			
+			Log.d(ViewManager.class.getCanonicalName(), "scale = " + scale);
+		}
+		
+		gameX = (drawingWidth - gameWidth) / 2;
+		gameY = 0;
+		
+		addView(lodeRunnerView, gameX, gameY, gameWidth, gameHeigth);
+		
+		addView(doneTextView, gameX, gameY, gameWidth,	gameHeigth);		
+		
+		return new Rect(gameX, gameY, gameX + gameWidth, gameY + gameHeigth);
+	};	
 	
 	private View addView(View view, int x, int y, int width, int heigth) {
 		LayoutParams layoutParams = new LayoutParams(width, heigth);
@@ -202,11 +206,11 @@ public class ViewManager {
 		});
 		
 	}
-	private void createInfoLabels(int drawingWidth, int buttonSize) {
+	private void createInfoLabels(int drawingWidth, int buttonSize, Rect gameRect) {
 		
 		// left
 
-		int labelTop = LodeRunnerStage.STAGE_HEIGHT_PIXELS + MARGIN;
+		int labelTop = gameRect.bottom + MARGIN;
 		int labelSize = buttonSize / 4;
 
 		//level info	
@@ -266,7 +270,7 @@ public class ViewManager {
 	}
 	
 
-	private void createMenuWidgets(int drawingWidth, int buttonSize) {
+	private void createMenuWidgets(int drawingWidth, int buttonSize, Rect gameRect) {
 		doneTextView.setGravity(Gravity.CENTER);
 		doneTextView.setVisibility(View.INVISIBLE);		
 		
@@ -292,7 +296,7 @@ public class ViewManager {
 					}
 				});		
 		
-		int afterViewY = LodeRunnerStage.STAGE_HEIGHT_PIXELS + MARGIN;
+		int afterViewY = gameRect.bottom + MARGIN;
 		
 		addButton(TEXT_FIRST, (drawingWidth - buttonSize)/2 - 2 * (buttonSize + MARGIN), afterViewY, buttonSize, false,
 				new View.OnClickListener() {
@@ -397,6 +401,38 @@ public class ViewManager {
 			}
 		});
 		t.start();
+	}
+
+	private void createSwipeDetector(int drawingWidth) {
+		SwipeDetector swipeDetector = new SwipeDetector(new SwipeListener() {
+			
+			public void top2bottom(View v) {
+				gameManager.down();
+			}
+			
+			public void right2left(View v) {
+				gameManager.left();
+			}
+			
+			public void left2right(View v) {
+				gameManager.right();
+			}
+			
+			public void bottom2top(View v) {
+				gameManager.up();
+			}
+
+			public void tapLeft(View v) {
+				gameManager.digLeft();		
+			}
+
+			public void tapRigth(View v) {
+				gameManager.digRight();						
+			}
+		});
+		
+		swipeDetector.setDrawingWidth(drawingWidth);
+		relativeLayout.setOnTouchListener(swipeDetector);
 	}
 
 

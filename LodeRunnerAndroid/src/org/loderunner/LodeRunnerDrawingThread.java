@@ -62,6 +62,8 @@ public class LodeRunnerDrawingThread extends Thread {
 	private int width;
 	private int height;
 	private Context context;
+	private int scale = 1;
+	
 
 	public int getWidth() {
 		return width;
@@ -100,7 +102,6 @@ public class LodeRunnerDrawingThread extends Thread {
 			Canvas canvas = null;
 			try {
 				canvas = holder.lockCanvas(null);
-
 				synchronized (holder) {
 					doDraw(canvas);
 				}
@@ -117,6 +118,7 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	private void doDraw(Canvas canvas) {
 		g.setCanvas(canvas);
+		g.setScale(scale);
 		stage.paint(g);
 	}
 
@@ -465,6 +467,10 @@ public class LodeRunnerDrawingThread extends Thread {
 
 	public void setPauseRequestedListener(PauseRequestedListener pauseRequestedListener) {
 		this.pauseRequestedListener = pauseRequestedListener;		
+	}
+
+	public void setScale(int scale) {
+		this.scale  = scale;
 	}
 
 }
