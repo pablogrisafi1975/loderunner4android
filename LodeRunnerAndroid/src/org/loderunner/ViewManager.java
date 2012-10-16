@@ -35,13 +35,6 @@ public class ViewManager {
 	private LodeRunnerView lodeRunnerView;
 	private LodeRunnerActivity lodeRunnerActivity;
 	
-	private static final String TEXT_RIGHT = "\u2192";
-	private static final String TEXT_LEFT = "\u2190";
-	private static final String TEXT_DOWN = "\u2193";
-	private static final String TEXT_UP = "\u2191";
-	private static final String TEXT_DIG_RIGHT = "\u2198";
-	private static final String TEXT_DIG_LEFT = "\u2199";
-	private static final String TEXT_DIG = "\u2199\u2198";
 	private static final String TEXT_MENU = "Menu";
 	private static final String TEXT_PLAY = "Play";
 	private static final String TEXT_SUICIDE = "Suicide";
@@ -90,48 +83,46 @@ public class ViewManager {
 					
 					public void top2bottom(View v) {
 						gameManager.down();
-						
 					}
 					
 					public void right2left(View v) {
 						gameManager.left();
-						
 					}
 					
 					public void left2right(View v) {
 						gameManager.right();
-						
 					}
 					
 					public void bottom2top(View v) {
 						gameManager.up();
-						
 					}
 
-					public void tap(View v) {
-						gameManager.dig();						
+					public void tapLeft(View v) {
+						gameManager.digLeft();		
+					}
+
+					public void tapRigth(View v) {
+						gameManager.digRight();						
 					}
 				});
+				
+				swipeDetector.setDrawingWidth(drawingWidth);
 
 				relativeLayout.setOnTouchListener(swipeDetector);
 
 				Log.d(LodeRunnerActivity.class.getCanonicalName(), "width:" + drawingWidth + "height:" + drawingHeight);
-
-				int smallButtonSize = (drawingHeight - LodeRunnerStage.STAGE_HEIGHT_PIXELS - MARGIN * 3) / 2;
-				Log.d(LodeRunnerActivity.class.getCanonicalName(), "squareButtonSize:" + smallButtonSize);
-				int bigButtonSize = (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 - 2 * MARGIN;
-				int lastButtonLine = drawingHeight - smallButtonSize - MARGIN;
-
-
+				int buttonSize = (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 - 2 * MARGIN;
 				addView(lodeRunnerView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS ,
 						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
 				
 				addView(doneTextView, (drawingWidth - LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2, 0, LodeRunnerStage.STAGE_WIDTH_PIXELS,
 						LodeRunnerStage.STAGE_HEIGHT_PIXELS);
 
-				createActionWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
+				createPlayWidgets(drawingWidth, buttonSize);
 				
-				createMenuWidgets(drawingWidth, smallButtonSize, bigButtonSize, lastButtonLine);
+				createMenuWidgets(drawingWidth, buttonSize);
+				
+				createInfoLabels(drawingWidth, buttonSize);
 				
 				gameManager.updateLevelInfo();
 
@@ -203,77 +194,29 @@ public class ViewManager {
 		return layoutHeight;
 	}
 
-	private void createActionWidgets(int drawingWidth, int smallButtonSize, int bigButtonSize, int lastButtonLine) {
-		//menu
-		addButton(TEXT_MENU, MARGIN, MARGIN, bigButtonSize, true, new View.OnClickListener() {
+	private void createPlayWidgets(int drawingWidth, int buttonSize) {
+		addButton(TEXT_MENU, MARGIN, MARGIN, buttonSize, true, new View.OnClickListener() {
 			public void onClick(View v) {
 				lodeRunnerActivity.onMenu();
 			}		
 		});
-
-		// dig left
-		addButton(TEXT_DIG_LEFT, MARGIN, lastButtonLine, smallButtonSize, true,
-				new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.digLeft();
-					}
-				});
-
-		// dig right
-		addButton(TEXT_DIG_RIGHT, 2 * MARGIN + smallButtonSize, lastButtonLine, smallButtonSize, true,
-				new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.digRight();
-					}
-				});
-		//dig
-		addButton(TEXT_DIG, MARGIN, lastButtonLine - MARGIN - bigButtonSize, bigButtonSize, true,
-				new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.dig();
-					}
-				});		
-
-		// up
-		int upDownX = (drawingWidth + LodeRunnerStage.STAGE_WIDTH_PIXELS) / 2 + MARGIN;
-		addButton(TEXT_UP, upDownX, lastButtonLine - 2 * MARGIN - 2 * smallButtonSize, smallButtonSize,
-				true, new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.up();
-					}
-				});
-		// down
-		addButton(TEXT_DOWN, upDownX, lastButtonLine, smallButtonSize, true, new View.OnClickListener() {
-			public void onClick(View v) {
-				gameManager.down();
-			}
-		});
-
+		
+	}
+	private void createInfoLabels(int drawingWidth, int buttonSize) {
+		
 		// left
 
-		int leftRighY = lastButtonLine - MARGIN - smallButtonSize;
+		int labelTop = LodeRunnerStage.STAGE_HEIGHT_PIXELS + MARGIN;
+		int labelSize = buttonSize / 4;
 
-		addButton(TEXT_LEFT, drawingWidth - 2 * (MARGIN + smallButtonSize), leftRighY, smallButtonSize,
-				true, new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.left();
-					}
-				});
-		// Right
-		addButton(TEXT_RIGHT, drawingWidth - (MARGIN + smallButtonSize), leftRighY, smallButtonSize,
-				true, new View.OnClickListener() {
-					public void onClick(View v) {
-						gameManager.right();
-					}
-				});
 		//level info	
-		addView(levelTextView, (drawingWidth - bigButtonSize) / 2, leftRighY, bigButtonSize, smallButtonSize / 2);
+		addView(levelTextView, (drawingWidth - buttonSize) / 2, labelTop, buttonSize, labelSize);
 		
-		addView(livesTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize / 2, bigButtonSize, smallButtonSize / 2);
+		addView(livesTextView, (drawingWidth - buttonSize) / 2, labelTop + labelSize, buttonSize, labelSize);
 		 
-		addView(coinsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize , bigButtonSize, smallButtonSize / 2);
+		addView(coinsTextView, (drawingWidth - buttonSize) / 2, labelTop + labelSize * 2 , buttonSize, labelSize);
 		
-		addView(villainsTextView, (drawingWidth - bigButtonSize) / 2, leftRighY + smallButtonSize * 3 / 2, bigButtonSize, smallButtonSize / 2);
+		addView(villainsTextView, (drawingWidth - buttonSize) / 2, labelTop + labelSize * 3, buttonSize, labelSize);
 		
 		gameManager.setLevelChangeListener(new LevelInfoChangedListener() {
 			public void levelInfoChanged(final LevelInfo levelInfo) {
@@ -323,26 +266,26 @@ public class ViewManager {
 	}
 	
 
-	private void createMenuWidgets(int drawingWidth, int smallButtonSize, int bigButtonSize, int lastButtonLine) {
+	private void createMenuWidgets(int drawingWidth, int buttonSize) {
 		doneTextView.setGravity(Gravity.CENTER);
 		doneTextView.setVisibility(View.INVISIBLE);		
 		
 		//menu
-		addButton(TEXT_PLAY, MARGIN, MARGIN, bigButtonSize, false, new View.OnClickListener() {
+		addButton(TEXT_PLAY, MARGIN, MARGIN, buttonSize, false, new View.OnClickListener() {
 			public void onClick(View v) {
 				lodeRunnerActivity.onPlay();
 			}		
 		});
 
 		// suicide
-		addButton(TEXT_SUICIDE, drawingWidth - MARGIN - bigButtonSize, MARGIN, bigButtonSize, false,
+		addButton(TEXT_SUICIDE, drawingWidth - MARGIN - buttonSize, MARGIN, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.suicide();
 					}
 				});
 		
-		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - bigButtonSize, MARGIN * 2 + bigButtonSize, bigButtonSize, false,
+		addButton(TEXT_CLEAR_DONE, drawingWidth - MARGIN - buttonSize, MARGIN * 2 + buttonSize, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						showClearDoneDialog(SURE_CLEAR_ALL_LEVELS);
@@ -351,13 +294,13 @@ public class ViewManager {
 		
 		int afterViewY = LodeRunnerStage.STAGE_HEIGHT_PIXELS + MARGIN;
 		
-		addButton(TEXT_FIRST, (drawingWidth - bigButtonSize)/2 - 2 * (bigButtonSize + MARGIN), afterViewY, bigButtonSize, false,
+		addButton(TEXT_FIRST, (drawingWidth - buttonSize)/2 - 2 * (buttonSize + MARGIN), afterViewY, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.firstLevel();
 					}
 				});		
-		Button prevButton = addButton(TEXT_PREV, (drawingWidth - bigButtonSize)/2 - (bigButtonSize + MARGIN), afterViewY, bigButtonSize, false,
+		Button prevButton = addButton(TEXT_PREV, (drawingWidth - buttonSize)/2 - (buttonSize + MARGIN), afterViewY, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.prevLevel();
@@ -371,7 +314,7 @@ public class ViewManager {
 			}
 		});		
 		
-		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + bigButtonSize )/2 + MARGIN, afterViewY, bigButtonSize, false,
+		final Button nextButton = addButton(TEXT_NEXT, (drawingWidth + buttonSize )/2 + MARGIN, afterViewY, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						gameManager.nextLevel();
@@ -388,7 +331,7 @@ public class ViewManager {
 		});
 		
 		
-		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + bigButtonSize )/2 + 2 * MARGIN + bigButtonSize , afterViewY, bigButtonSize, false,
+		addButton(TEXT_NEXT_NOT_DONE, (drawingWidth + buttonSize )/2 + 2 * MARGIN + buttonSize , afterViewY, buttonSize, false,
 				new View.OnClickListener() {
 					public void onClick(View v) {
 						int nextLevelNotDone = gameManager.nextLevelNotDone();
