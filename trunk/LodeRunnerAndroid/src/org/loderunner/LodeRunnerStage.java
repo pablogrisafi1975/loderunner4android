@@ -58,9 +58,9 @@ class LodeRunnerStage {
     public static final int TILE_HERO = 9;
     /** Volatile tile type constant used for tiles out of stage boundaries */
     public static final int TILE_OUTSIDE = 10;
-    /** Volatile tile type constant used for brick just being digged (still considered full) */
+    /** Volatile tile type constant used for brick just being dug (still considered full) */
     public static final int TILE_HOLE_FULL = 11;
-    /** Volatile tile type constant used for brick completely digged (considered empty, can trap villains) */
+    /** Volatile tile type constant used for brick completely dug (considered empty, can trap villains) */
     public static final int TILE_HOLE_EMPTY = 12;
     /** Tiles array describing the stage landscape. Values are tile type TILE_* constants. */
     private int[] tiles = new int[STAGE_WIDTH * STAGE_HEIGHT];
@@ -75,7 +75,7 @@ class LodeRunnerStage {
     /** Sprite size constant for small stage overview rendering */
     public static final int SPRITE_SMALL = 1;
     /** Lode Runner game hero */
-    public LodeRunnerHero hero = null;
+    public volatile LodeRunnerHero hero = null;
     /** Lode Runner game vilains. Vector of LodeRunnerVilain elements. */
     public List<LodeRunnerVillain> villains = null;
     /** Lode Runner holes in this stage. */
@@ -275,7 +275,7 @@ class LodeRunnerStage {
         return tile;
     }
 
-    /** Set the tile type at a given postion */
+    /** Set the tile type at a given position */
     public void setTile(int xTile, int yTile, int type) {
         if (xTile < 0 || xTile >= STAGE_WIDTH || yTile < 0 || yTile >= STAGE_HEIGHT) {
             return;
