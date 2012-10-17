@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">LodeRunnerAndroid</string>
-    <string name="title_activity_lode_runner">LodeRunnerAndroid</string>
+    <string name="app_name">LodeRunner</string>
+    <string name="title_activity_lode_runner">LodeRunner</string>
 </resources>
