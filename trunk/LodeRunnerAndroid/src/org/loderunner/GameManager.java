@@ -33,31 +33,45 @@ public class GameManager {
 	}
 
 	public void up() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_CLIMB_UP);
+		}
 	}
 
 	public void down() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_CLIMB_DOWN);
+		}
 	}
 
 	public void left() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_RUN_LEFT);
+		}
 	}
 
 	public void right() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerCharacter.MOVE_RUN_RIGHT);
+		}
 	}
 	
 	public void digLeft() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_LEFT);
+		}
 	}
 
 	public void digRight() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG_RIGHT);
+		}
 	}	
 	
 	public void dig() {
-		lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG);
+		if(!lodeRunnerDrawingThread.isPaused){
+			lodeRunnerDrawingThread.gameAction(LodeRunnerHero.MOVE_DIG);
+		}
 		
 	}
 	

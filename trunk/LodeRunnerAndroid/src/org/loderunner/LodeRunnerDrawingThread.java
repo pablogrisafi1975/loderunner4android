@@ -379,14 +379,16 @@ public class LodeRunnerDrawingThread extends Thread {
 	}
 
 	public void gameAction(int actionCode) {
-		if (actionCode == LodeRunnerHero.MOVE_DIG) {
-			if (stage.hero.lookLeft) {
-				stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_LEFT);
+		if(stage != null && stage.isLoaded){
+			if (actionCode == LodeRunnerHero.MOVE_DIG) {
+				if (stage.hero.lookLeft) {
+					stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_LEFT);
+				} else {
+					stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_RIGHT);
+				}
 			} else {
-				stage.hero.requestMove(LodeRunnerHero.MOVE_DIG_RIGHT);
+				stage.hero.requestMove(actionCode);
 			}
-		} else {
-			stage.hero.requestMove(actionCode);
 		}
 	}
 
