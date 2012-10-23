@@ -3,15 +3,17 @@ package org.loderunner.swipe;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 public class SwipeDetector implements View.OnTouchListener {
 
 	static final String logTag = "SwipeDetector";
 	private SwipeListener swipeListener;
 	static final int MIN_DISTANCE_TO_SWIPE = 50;
-	static final int MAX_DISTANCE_TO_CLICK = 5;
+	private static final long TAP_TIMEOUT = ViewConfiguration.getTapTimeout();
 	private float downX, downY, upX, upY;
 	private int drawingWidth;
+	private long downT, upT;
 
 	public SwipeDetector(SwipeListener swipeListener) {
 		this.swipeListener = swipeListener;
@@ -52,17 +54,31 @@ public class SwipeDetector implements View.OnTouchListener {
 		case MotionEvent.ACTION_DOWN: {
 			downX = event.getX();
 			downY = event.getY();
+			downT = event.getEventTime();
 			return true;
 		}
 		case MotionEvent.ACTION_UP: {
 			upX = event.getX();
 			upY = event.getY();
+			upT = event.getEventTime();
 
 			float deltaX = downX - upX;
 			float deltaY = downY - upY;
+			long deltaT = upT - downT;
+			
+			if(deltaT < TAP_TIMEOUT){ //is a TAP
+				if(upX > drawingWidth / 2){
+					this.onTapRigth(v);
+				}else{
+					this.onTapLeft(v);
+				}
+				return true;
+			}
+			
+			//its a swipe
 
 			// swipe horizontal?
-			if (Math.abs(deltaX) > MIN_DISTANCE_TO_SWIPE) {
+			if (Math.abs(deltaX) > Math.abs(deltaY) ) {
 				// left or right
 				if (deltaX < 0) {
 					this.onLeftToRightSwipe(v);
@@ -72,12 +88,8 @@ public class SwipeDetector implements View.OnTouchListener {
 					this.onRightToLeftSwipe(v);
 					return true;
 				}
-			} else {
-				Log.i(logTag, "Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE_TO_SWIPE);
 			}
-
-			// swipe vertical?
-			if (Math.abs(deltaY) > MIN_DISTANCE_TO_SWIPE) {
+			else{
 				// top or down
 				if (deltaY < 0) {
 					this.onTopToBottomSwipe(v);
@@ -87,18 +99,8 @@ public class SwipeDetector implements View.OnTouchListener {
 					this.onBottomToTopSwipe(v);
 					return true;
 				}
-			} else {
-				Log.i(logTag, "Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE_TO_SWIPE);
-				v.performClick();
-			}
-			if(Math.abs(deltaY) < MAX_DISTANCE_TO_CLICK && Math.abs(deltaX) < MAX_DISTANCE_TO_CLICK){
-				if(upX > drawingWidth / 2){
-					this.onTapRigth(v);
-				}else{
-					this.onTapLeft(v);
-				}
-				return true;
-			}
+			} 
+
 		}
 		}
 		return false;
