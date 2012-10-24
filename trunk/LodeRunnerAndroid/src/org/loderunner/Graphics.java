@@ -88,7 +88,7 @@ public class Graphics {
 	}
 	
 	public void translate(int x, int y) {
-		//canvas.translate(x, y);
+		canvas.translate(x, y);
 	}	
 
 	public int getTranslateX() {

@@ -95,8 +95,13 @@ public class ViewManager {
 		int gameY = 0;
 		int gameWidth = 0;
 		int gameHeigth = 0;		
-		
-		if(drawingWidth <= 600){
+		if(drawingWidth <= LodeRunnerStage.STAGE_WIDTH_PIXELS){
+			gameWidth = drawingWidth;
+			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS;			
+			lodeRunnerView.setScale(1);
+			Log.d(ViewManager.class.getCanonicalName(), "scale = 1, but panning");
+		}		
+		else if(drawingWidth <= 600){
 			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS;
 			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS;
 			lodeRunnerView.setScale(1);
