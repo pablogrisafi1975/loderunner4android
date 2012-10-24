@@ -7,7 +7,7 @@ import android.view.ViewConfiguration;
 
 public class SwipeDetector implements View.OnTouchListener {
 
-	static final String logTag = "SwipeDetector";
+	static final String logTag = SwipeDetector.class.getCanonicalName();
 	private SwipeListener swipeListener;
 	static final int MIN_DISTANCE_TO_SWIPE = 50;
 	private static final long TAP_TIMEOUT = ViewConfiguration.getTapTimeout();
