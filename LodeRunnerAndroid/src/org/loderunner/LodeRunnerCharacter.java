@@ -16,7 +16,7 @@ abstract class LodeRunnerCharacter {
     protected int xAdjust, yAdjust;
     /** Direction of this character's move */
     protected int xDelta, yDelta;
-    /** Direction of this characted head (true if facing left) */
+    /** Direction of this character head (true if facing left) */
     protected boolean lookLeft;
     /** Number of heartBeats before this character can move again */
     protected int delayBusy;
@@ -268,7 +268,7 @@ abstract class LodeRunnerCharacter {
         }
     }
 
-    /** Check if this character can change tile during a move. (That test is called during position adjustement.) */
+    /** Check if this character can change tile during a move. (That test is called during position adjustment.) */
     protected boolean canChangeTile(int xNewTile, int yNewTile) {
         return true;
     }

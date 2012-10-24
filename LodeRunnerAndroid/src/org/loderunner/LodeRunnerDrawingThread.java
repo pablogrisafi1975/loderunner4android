@@ -173,8 +173,8 @@ public class LodeRunnerDrawingThread extends Thread {
 				if (!stage.isLoaded) {
 					g.setColor(0x00ffff00);
 					//g.drawString("Loading...", x + cx / 2, y + (cy - font.getHeight()) / 2, Graphics.TOP  | Graphics.HCENTER);
-					g.setColor(0x001463af);
-					g.drawString("� 2006 - Fabien GIGANTE", w0 / 2, h0 - 2, Graphics.HCENTER | Graphics.BOTTOM);
+					//g.setColor(0x001463af);
+					//g.drawString("� 2006 - Fabien GIGANTE", w0 / 2, h0 - 2, Graphics.HCENTER | Graphics.BOTTOM);
 				}
 
 			} else {

@@ -160,7 +160,7 @@ class LodeRunnerStage {
                             hero.moveToTile(i);
                             tile = TILE_VOID;
                             break;
-                        // Add vilains at their initial positions
+                        // Add villains at their initial positions
                         case TILE_MONK:
                             LodeRunnerVillain vilain = new LodeRunnerVillain(LodeRunnerStage.this);
                             vilain.moveToTile(i);
@@ -218,7 +218,7 @@ class LodeRunnerStage {
         if (backgroundTilesToRepaint != null) {
             backgroundTilesToRepaint.clear();
         }
-        // Asynchroneously load the stage
+        // Asynchronously load the stage
         loadingThread = new LoadingThread(binInputStream, level);
         loadingThread.start();        
     }
@@ -229,7 +229,7 @@ class LodeRunnerStage {
         return yTile * STAGE_WIDTH + xTile;
     }
 
-    /** Get the tile type at a given postion (raw value from the array)  */
+    /** Get the tile type at a given position (raw value from the array)  */
     public int getTile(int xTile, int yTile) {
         if (xTile < 0 || xTile >= STAGE_WIDTH || yTile < 0 || yTile >= STAGE_HEIGHT) {
             return TILE_OUTSIDE;
@@ -285,13 +285,13 @@ class LodeRunnerStage {
         if (backgroundTilesToRepaint != null) {
             backgroundTilesToRepaint.add(getTileIndex(xTile, yTile));
         }
-        // Keep track of digged holes (for delayed refill)
+        // Keep track of dug holes (for delayed refill)
         if (type == TILE_HOLE_EMPTY) {
             holes.add(new LodeRunnerHole(this, xTile, yTile));
         }
     }
 
-    /** Check if the given tile is occupied by a vilain */
+    /** Check if the given tile is occupied by a villain */
     private boolean isVilainAt(int xTile, int yTile, boolean includeRespawning) {
         for (LodeRunnerVillain vilain :villains) {
             if (vilain.xTile == xTile && vilain.yTile == yTile && (includeRespawning || vilain.currentMove != LodeRunnerVillain.MOVE_RESPAWN)) {
@@ -301,12 +301,12 @@ class LodeRunnerStage {
         return false;
     }
 
-    /** Check if the given tile is occupied by a living vilain */
+    /** Check if the given tile is occupied by a living villain */
     public boolean isVilainAt(int xTile, int yTile) {
         return isVilainAt(xTile, yTile, false);
     }
 
-    /** Randomly computes a tile index suitable for respawning a vilain */
+    /** Randomly computes a tile index suitable for respawning a villain */
     public int computeRandomRespawnPoint() {
         // Compute possible respawn points (not on top row)
         List<Integer> possiblePoints = new ArrayList<Integer>();
