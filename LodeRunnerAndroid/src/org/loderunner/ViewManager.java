@@ -37,6 +37,7 @@ public class ViewManager {
 	private LodeRunnerActivity lodeRunnerActivity;
 	
 	private static final String TEXT_PAUSE = "Pause";
+	private static final String TEXT_QUIT = "Quit";
 	private static final String TEXT_PLAY = "Play";
 	private static final String TEXT_SUICIDE = "Suicide";
 	private static final String TEXT_CLEAR_DONE = "Clear\nDone";
@@ -332,6 +333,12 @@ public class ViewManager {
 						showClearDoneDialog(SURE_CLEAR_ALL_LEVELS);
 					}
 				});		
+		
+		addSquareButton(TEXT_QUIT, drawingWidth - buttonSize - margin , margin, buttonSize, false, new View.OnClickListener() {
+			public void onClick(View v) {
+				lodeRunnerActivity.finish();
+			}		
+		});		
 		
 		makeRepeatingButton(prevButton,  new View.OnLongClickListener() {			
 			public boolean onLongClick(View view) {
