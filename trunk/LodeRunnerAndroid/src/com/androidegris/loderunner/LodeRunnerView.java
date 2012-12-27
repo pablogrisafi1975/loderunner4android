@@ -52,6 +52,11 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 		drawingThread.setScale(scale);	
 	}
 
+	public void setPaning(boolean paning) {
+		drawingThread.setPaning(paning);		
+	}
+
+
 
 	
 

@@ -27,7 +27,7 @@ public class LodeRunnerStage {
     /** Number of levels per game */
     public static final int GAME_LEVELS = 150;
     /** Maximum number of levels  (for both Lode Runner and Championship) */
-    public static final int MAX_LEVELS = 2 * GAME_LEVELS;
+    public static final int MAX_LEVELS = GAME_LEVELS + 50;
     /** Stage width in tiles */
     public static final int STAGE_WIDTH = 28;
     /** Stage height in tiles */
