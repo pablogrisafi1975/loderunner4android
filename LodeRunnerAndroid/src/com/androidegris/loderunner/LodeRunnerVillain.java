@@ -6,7 +6,7 @@ import com.androidegris.loderunner.midp.Graphics;
 
 
 /**
- * The Lode Runner vilain character evolving within a game stage.
+ * The Lode Runner villain character evolving within a game stage.
  * - can be trapped in digged holes
  * - implements respawning behavior
  * - implements take/drop chest behavior
@@ -25,26 +25,26 @@ class LodeRunnerVillain extends LodeRunnerCharacter {
     /** Delay in heartbeats before respawn */
     public static final int DELAY_RESPAWN = 8;
     /**
-     * Is this vilain trapped in a digged hole?
+     * Is this villain trapped in a dig hole?
      * - if currentMove equals MOVE_FALL_DOWN, he is falling into the hole
      * - if currentMove equals MOVE_NONE, he is already trapped inside the hole
      * - if currentMove equals MOVE_CLIMB_HOLE, he is climbing outside the hole
      */
     private boolean isTrapped;
 
-    /** Initialize this vilain in the stage */
+    /** Initialize this villain in the stage */
     LodeRunnerVillain(LodeRunnerStage stage) {
         super(stage);
     }
 
-    /** Position this vilain at a given tile index */
+    /** Position this villain at a given tile index */
     public void moveToTile(int tile) {
         super.moveToTile(tile);
         lookLeft = true;
         isTrapped = false;
     }
 
-    /** Compute the sprite frame number for painting this vilain */
+    /** Compute the sprite frame number for painting this villain */
     public int getFrame() {
         int[] keyFrames = {42, 21, 61, 66};
         // When respawning
@@ -232,7 +232,7 @@ class LodeRunnerVillain extends LodeRunnerCharacter {
         int initialMove = nextMove;
         if (initialMove != MOVE_CLIMB_HOLE && stage.hero != null) {
             int yHero = stage.hero.yTile;
-            // If this vilain is far enough, try to anticipate the hero's move
+            // If this villain is far enough, try to anticipate the hero's move
             if (stage.hero.xTile != xTile) {
                 if (stage.hero.yDelta > 0) {
                     yHero += 2;

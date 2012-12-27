@@ -7,12 +7,12 @@ import android.view.ViewConfiguration;
 
 public class SwipeDetector implements View.OnTouchListener {
 
-	static final String logTag = SwipeDetector.class.getCanonicalName();
-	private SwipeListener swipeListener;
-	static final int MIN_DISTANCE_TO_SWIPE = 50;
+	private static final String logTag = SwipeDetector.class.getCanonicalName();
 	private static final long TAP_TIMEOUT = ViewConfiguration.getTapTimeout();
+	
+	private SwipeListener swipeListener;	
 	private float downX, downY, upX, upY;
-	private int drawingWidth;
+	private int halfDrawingWidth;
 	private long downT, upT;
 
 	public SwipeDetector(SwipeListener swipeListener) {
@@ -20,12 +20,12 @@ public class SwipeDetector implements View.OnTouchListener {
 	}
 
 	public void onRightToLeftSwipe(View v) {
-		Log.i(logTag, "RightToLeftSwipe!");
+		Log.i(logTag, "onRightToLeftSwipe!");
 		swipeListener.right2left(v);
 	}
 
 	public void onLeftToRightSwipe(View v) {
-		Log.i(logTag, "LeftToRightSwipe!");
+		Log.i(logTag, "onLeftToRightSwipe!");
 		swipeListener.left2right(v);
 	}
 
@@ -40,12 +40,12 @@ public class SwipeDetector implements View.OnTouchListener {
 	}
 	
 	public void onTapLeft(View v) {
-		Log.i(logTag, "onTap!");
+		Log.i(logTag, "onTapLeft!");
 		swipeListener.tapLeft(v);
 	}	
 
 	public void onTapRigth(View v) {
-		Log.i(logTag, "onTap!");
+		Log.i(logTag, "onTapRigth!");
 		swipeListener.tapRigth(v);
 	}	
 	
@@ -65,9 +65,10 @@ public class SwipeDetector implements View.OnTouchListener {
 			float deltaX = downX - upX;
 			float deltaY = downY - upY;
 			long deltaT = upT - downT;
+			Log.i(logTag, "deltaX:" + deltaX + " deltaY:" + deltaY + " deltaT:" + deltaT);
 			
 			if(deltaT < TAP_TIMEOUT){ //is a TAP
-				if(upX > drawingWidth / 2){
+				if(upX > halfDrawingWidth){
 					this.onTapRigth(v);
 				}else{
 					this.onTapLeft(v);
@@ -107,7 +108,7 @@ public class SwipeDetector implements View.OnTouchListener {
 	}
 
 	public void setDrawingWidth(int drawingWidth) {
-		this.drawingWidth = drawingWidth;		
+		this.halfDrawingWidth = drawingWidth / 2;		
 	}
 
 }

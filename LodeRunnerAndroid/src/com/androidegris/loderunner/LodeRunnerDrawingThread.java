@@ -74,6 +74,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	private int height;
 	private Context context;
 	private int scale = 1;
+	private boolean paning = false;
 	
 
 	public int getWidth() {
@@ -130,6 +131,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	private void doDraw(Canvas canvas) {
 		g.setCanvas(canvas);
 		g.setScale(scale);
+		g.setPaning(paning);
 		stage.paint(g);
 	}
 
@@ -486,4 +488,8 @@ public class LodeRunnerDrawingThread extends Thread {
 		this.scale  = scale;
 	}
 
+	public void setPaning(boolean paning) {
+		this.paning = paning;
+		
+	}
 }

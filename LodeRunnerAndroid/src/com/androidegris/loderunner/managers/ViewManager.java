@@ -108,6 +108,7 @@ public class ViewManager {
 			gameWidth = drawingWidth;
 			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS;			
 			lodeRunnerView.setScale(1);
+			lodeRunnerView.setPaning(true);
 			Log.d(ViewManager.class.getCanonicalName(), "scale = 1, but panning");
 		}		
 		else if(drawingWidth <= 600){
@@ -121,7 +122,7 @@ public class ViewManager {
 			lodeRunnerView.setScale(2);
 			Log.d(ViewManager.class.getCanonicalName(), "scale = 2");
 		}else{
-			int scale =  LodeRunnerStage.STAGE_WIDTH_PIXELS / drawingWidth;
+			int scale =  drawingWidth / LodeRunnerStage.STAGE_WIDTH_PIXELS;
 			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS * scale;
 			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS * scale;		
 			lodeRunnerView.setScale(scale);			
@@ -157,7 +158,7 @@ public class ViewManager {
 			actionButtons.add(button);
 		} else {			
 			menuButtons.add(button);
-		}
+		}		
 		button.setOnClickListener(onClickListener);
 		return (Button) addView(button, x, y, width, heigth);		
 	}
@@ -262,21 +263,16 @@ public class ViewManager {
 	private void createPlayWidgets(int drawingWidth, int drawingHeight, Rect gameRect) {
 		int buttonWidth =  (int) (((double)drawingWidth )/ 7.1d);
 		int margin = (drawingWidth - 7 * buttonWidth) / 8;		
-		int middleMinusHalf = (drawingWidth - buttonWidth) / 2;
 		
-		int buttonHeigth = buttonWidth;
-		if(buttonHeigth + gameRect.bottom + 2 * margin > drawingHeight){
-			buttonHeigth = drawingHeight - gameRect.bottom - 2 * margin; 
-		}
+		Button pauseButton = addSquareButton(TEXT_PAUSE, margin, margin, buttonWidth, true, null);
 		
-		int buttonTop = drawingHeight - margin - buttonHeigth;
-		
-		
-		addButton(TEXT_PAUSE, middleMinusHalf, buttonTop, buttonWidth, buttonHeigth, true, new View.OnClickListener() {
-			public void onClick(View v) {
+		pauseButton.setOnLongClickListener(new View.OnLongClickListener() {
+			public boolean onLongClick(View v) {
 				lodeRunnerActivity.onMenu();
-			}		
+				return false;
+			}
 		});
+		pauseButton.getBackground().setAlpha(64);
 		
 	}	
 	

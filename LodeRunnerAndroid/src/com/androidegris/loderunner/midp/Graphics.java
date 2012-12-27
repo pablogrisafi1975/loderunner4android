@@ -19,6 +19,7 @@ public class Graphics {
 	private Paint nextPaint;
 	private SparseArray<Paint> paints = new SparseArray<Paint>();
 	private int scale = 1;
+	private boolean paning = false;
 
 	public void setCanvas(Canvas canvas) {
 		this.canvas = canvas;
@@ -88,7 +89,9 @@ public class Graphics {
 	}
 	
 	public void translate(int x, int y) {
-		//canvas.translate(x, y);
+		if(paning){
+			canvas.translate(x, y);
+		}
 	}	
 
 	public int getTranslateX() {
@@ -122,7 +125,11 @@ public class Graphics {
 			this.scale = scale;	
 			this.canvas.scale(scale,  scale);
 		}
-
+	}
+	
+	
+	public void setPaning(boolean paning){
+		this.paning = paning;
 	}
 
 }
