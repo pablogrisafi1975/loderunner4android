@@ -1,6 +1,8 @@
 package com.androidegris.loderunner;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 import com.androidegris.loderunner.R;
@@ -336,12 +338,14 @@ public class LodeRunnerDrawingThread extends Thread {
 
 		/** Scheduled every 2 frames */
 		public final static int PERIOD = 2 * FRAMERATE_MILLISEC;
-
+		List<LodeRunnerHole> holesClone = new ArrayList<LodeRunnerHole>();
 		/** Heartbeat */
 		public void runWrapped() {
 			// Loop on every hole
 			if (stage != null && stage.isLoaded) {
-				for (LodeRunnerHole lodeRunnerHole : stage.holes) {
+				holesClone.clear();
+				holesClone.addAll(stage.holes);
+				for (LodeRunnerHole lodeRunnerHole : holesClone) {
 					lodeRunnerHole.heartBeat();
 				}
 			}
