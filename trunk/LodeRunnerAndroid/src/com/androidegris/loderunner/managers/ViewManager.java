@@ -84,7 +84,7 @@ public class ViewManager {
 				
 				createSwipeDetector(drawingWidth);
 				
-				Rect gameRect = createGameView(drawingWidth);
+				Rect gameRect = createGameView(drawingWidth, drawingHeight);
 				
 				createPlayWidgets(drawingWidth, drawingHeight, gameRect);
 				
@@ -99,7 +99,7 @@ public class ViewManager {
 		};
 	}
 	
-	private Rect createGameView(int drawingWidth) {
+	private Rect createGameView(int drawingWidth, int drawinHeigth) {
 		int gameX = 0;
 		int gameY = 0;
 		int gameWidth = 0;
@@ -110,21 +110,12 @@ public class ViewManager {
 			lodeRunnerView.setScale(1);
 			lodeRunnerView.setPaning(true);
 			Log.d(ViewManager.class.getCanonicalName(), "scale = 1, but panning");
-		}		
-		else if(drawingWidth <= 600){
-			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS;
-			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS;
-			lodeRunnerView.setScale(1);
-			Log.d(ViewManager.class.getCanonicalName(), "scale = 1");
-		}else if(drawingWidth <= 900){
-			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS * 2;
-			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS * 2;		
-			lodeRunnerView.setScale(2);
-			Log.d(ViewManager.class.getCanonicalName(), "scale = 2");
 		}else{
-			int scale =  drawingWidth / LodeRunnerStage.STAGE_WIDTH_PIXELS;
-			gameWidth = LodeRunnerStage.STAGE_WIDTH_PIXELS * scale;
-			gameHeigth = LodeRunnerStage.STAGE_HEIGHT_PIXELS * scale;		
+			float scaleX =  (float)drawingWidth / (float)LodeRunnerStage.STAGE_WIDTH_PIXELS;
+			float scaleY =  (float)drawinHeigth / (float)LodeRunnerStage.STAGE_HEIGHT_PIXELS;
+			float scale = Math.min(scaleX, scaleY);
+			gameWidth = (int)(LodeRunnerStage.STAGE_WIDTH_PIXELS * scale);
+			gameHeigth = (int)(LodeRunnerStage.STAGE_HEIGHT_PIXELS * scale);		
 			lodeRunnerView.setScale(scale);			
 			Log.d(ViewManager.class.getCanonicalName(), "scale = " + scale);
 		}
@@ -272,7 +263,6 @@ public class ViewManager {
 				return false;
 			}
 		});
-		pauseButton.getBackground().setAlpha(64);
 		
 	}	
 	

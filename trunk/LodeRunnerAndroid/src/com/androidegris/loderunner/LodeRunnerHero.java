@@ -122,6 +122,12 @@ public class LodeRunnerHero extends LodeRunnerCharacter {
             if (nChests == stage.nChests) {
                 stage.enableExit();
             }
+            //TODO remove;
+            /*
+            if(nChests > 1){
+            	throw new NullPointerException("???");
+            }
+            */
         }
         return chestTaken;
     }
