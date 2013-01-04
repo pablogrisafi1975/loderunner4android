@@ -1,5 +1,7 @@
 package com.androidegris.loderunner;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,11 +13,12 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 
 	private LodeRunnerDrawingThread drawingThread;
 
-	public LodeRunnerView(Context context, AttributeSet attrs) {
+	public LodeRunnerView(Context context, AttributeSet attrs, UncaughtExceptionHandler uncaughtExceptionHandler) {
 		super(context, attrs);
 		// register our interest in hearing about changes to our surface
 		SurfaceHolder holder = getHolder();
-		drawingThread = new LodeRunnerDrawingThread(holder , this.getContext(), this.getWidth(), this.getHeight());		
+		drawingThread = new LodeRunnerDrawingThread(holder , this.getContext(), this.getWidth(), this.getHeight());
+		drawingThread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
 		holder.addCallback(this);
 		setFocusable(true);
 
@@ -48,7 +51,7 @@ public class LodeRunnerView extends SurfaceView implements Callback {
 		return drawingThread;
 	}
 
-	public void setScale(int scale) {
+	public void setScale(float scale) {
 		drawingThread.setScale(scale);	
 	}
 

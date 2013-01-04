@@ -2,9 +2,9 @@ package com.androidegris.loderunner;
 
 import java.io.InputStream;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import com.androidegris.loderunner.R;
+import com.androidegris.loderunner.errorhandling.TimerTaskWithExceptionHandler;
 import com.androidegris.loderunner.listeners.LevelInfoChangedListener;
 import com.androidegris.loderunner.listeners.PauseRequestedListener;
 import com.androidegris.loderunner.midp.Graphics;
@@ -73,7 +73,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	private int width;
 	private int height;
 	private Context context;
-	private int scale = 1;
+	private float scale = 1;
 	private boolean paning = false;
 	
 
@@ -252,7 +252,10 @@ public class LodeRunnerDrawingThread extends Thread {
 		updateLevelInfo();
 	}
 
-	protected abstract class GameTask extends TimerTask {
+	protected abstract class GameTask extends TimerTaskWithExceptionHandler {
+		public GameTask(UncaughtExceptionHandler handler) {
+			super(handler);
+		}
 	}
 
 	/**
@@ -260,12 +263,14 @@ public class LodeRunnerDrawingThread extends Thread {
 	 * from this class
 	 */
 	protected class RepaintTask extends GameTask {
-
+		public RepaintTask(UncaughtExceptionHandler handler) {
+			super(handler);
+		}
 		/**
 		 * Triggered by the Timer. Ask the animation thread for a repaint (due
 		 * to timer).
 		 */
-		public void run() {
+		public void runWrapped() {
 			needsRepaint |= REPAINT_TIMER;
 		}
 	}
@@ -274,12 +279,15 @@ public class LodeRunnerDrawingThread extends Thread {
 	 * Define the hero's heartBeat as a game event task.
 	 */
 	protected class HeroHeartbeatTask extends RepaintTask {
+		public HeroHeartbeatTask(UncaughtExceptionHandler handler) {
+			super(handler);
+		}
 
 		/** Scheduled every frame */
 		public final static int PERIOD = FRAMERATE_MILLISEC;
 
 		/** Heartbeat */
-		public void run() {
+		public void runWrapped() {
 			if (stage != null && stage.isLoaded && stage.hero != null) {
 				stage.hero.heartBeat();
 				if (stage.endCompleted) {
@@ -288,7 +296,7 @@ public class LodeRunnerDrawingThread extends Thread {
 					stageOver(false);
 				}
 			}
-			super.run();
+			super.runWrapped();
 		}
 	}
 
@@ -297,18 +305,23 @@ public class LodeRunnerDrawingThread extends Thread {
 	 */
 	protected class VillainsHeartbeatTask extends RepaintTask {
 
+		public VillainsHeartbeatTask(UncaughtExceptionHandler handler) {
+			super(handler);
+		}
+
 		/** Scheduled every 2 frames */
 		public final static int PERIOD = 2 * FRAMERATE_MILLISEC;
 
 		/** Heartbeat */
-		public void run() {
+		public void runWrapped() {
 			// Loop on every villain
 			if (stage != null && stage.isLoaded) {
 				for (LodeRunnerVillain lodeRunnerVillain : stage.villains) {
 					lodeRunnerVillain.heartBeat();
 				}
 			}
-			super.run();
+			super.runWrapped();
+		
 		}
 	}
 
@@ -317,18 +330,22 @@ public class LodeRunnerDrawingThread extends Thread {
 	 */
 	protected class StageHeartbeatTask extends RepaintTask {
 
+		public StageHeartbeatTask(UncaughtExceptionHandler handler) {
+			super(handler);
+		}
+
 		/** Scheduled every 2 frames */
 		public final static int PERIOD = 2 * FRAMERATE_MILLISEC;
 
 		/** Heartbeat */
-		public void run() {
+		public void runWrapped() {
 			// Loop on every hole
 			if (stage != null && stage.isLoaded) {
 				for (LodeRunnerHole lodeRunnerHole : stage.holes) {
 					lodeRunnerHole.heartBeat();
 				}
 			}
-			super.run();
+			super.runWrapped();		
 		}
 	}
 
@@ -421,11 +438,11 @@ public class LodeRunnerDrawingThread extends Thread {
 		timer = new Timer();
 		levelStatuses[level] = STATUS_NOT_DONE;
 		
-		timer.schedule(new HeroHeartbeatTask(), 0, HeroHeartbeatTask.PERIOD);
+		timer.schedule(new HeroHeartbeatTask(this.getUncaughtExceptionHandler()), 0, HeroHeartbeatTask.PERIOD);
 		// Schedule the villains' heartBeat
-		timer.schedule(new VillainsHeartbeatTask(), 0, VillainsHeartbeatTask.PERIOD);
+		timer.schedule(new VillainsHeartbeatTask(this.getUncaughtExceptionHandler()), 0, VillainsHeartbeatTask.PERIOD);
 		// Schedule the stage's heartBeat
-		timer.schedule(new StageHeartbeatTask(), 0, StageHeartbeatTask.PERIOD);
+		timer.schedule(new StageHeartbeatTask(this.getUncaughtExceptionHandler()), 0, StageHeartbeatTask.PERIOD);
 		updateLevelInfo();
 	}
 
@@ -484,7 +501,7 @@ public class LodeRunnerDrawingThread extends Thread {
 		this.pauseRequestedListener = pauseRequestedListener;		
 	}
 
-	public void setScale(int scale) {
+	public void setScale(float scale) {
 		this.scale  = scale;
 	}
 

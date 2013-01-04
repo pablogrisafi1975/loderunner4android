@@ -1,5 +1,6 @@
 package com.androidegris.loderunner;
 
+import com.androidegris.loderunner.errorhandling.ExceptionHandler;
 import com.androidegris.loderunner.managers.GameManager;
 import com.androidegris.loderunner.managers.ViewManager;
 
@@ -22,9 +23,8 @@ public class LodeRunnerActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		Log.i(LodeRunnerActivity.class.getCanonicalName(), "onCreate");
 
@@ -99,7 +99,7 @@ public class LodeRunnerActivity extends Activity {
 		setContentView(relativeLayout);
 		
 		final LodeRunnerView lodeRunnerView = new LodeRunnerView(LodeRunnerActivity.this.getApplicationContext(),
-				null);	
+				null, Thread.getDefaultUncaughtExceptionHandler());	
 		gameManager = new GameManager(lodeRunnerView.getDrawingThread());
 		viewManager = new ViewManager(this, gameManager, relativeLayout, lodeRunnerView);
 		// this needs to be post'ed because the actual size of the window
