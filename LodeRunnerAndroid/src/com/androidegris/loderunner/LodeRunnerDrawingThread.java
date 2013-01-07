@@ -23,7 +23,7 @@ public class LodeRunnerDrawingThread extends Thread {
 	private static final String STORE_LIVES = "lives";
 	private static final String STORE_LEVELS = "level";
 	private static final String MSG_TRY_AGAIN = "Try again...";
-	private static final String MSG_GAME_OVER = "Game Over";
+	private static final String MSG_GAME_OVER = "Game Over (Just kidding)";
 	private static final String MSG_CONGRATS = "Congratulations!";
 	private Graphics g = new Graphics();
 	private LevelInfoChangedListener levelInfoChangedListener;

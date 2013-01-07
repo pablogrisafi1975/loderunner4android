@@ -17,6 +17,7 @@ import com.androidegris.loderunner.swipe.SwipeListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,12 +31,15 @@ import android.widget.TextView;
 
 public class ViewManager {
 
+	private static final int BRIGHT_GREEN = 0xFF00FF00;
 	private static final String TEXT_DONE = "Done!";
 	private static final String SURE_CLEAR_ALL_LEVELS = "Are you sure about clearing all done levels?";
 	private static final String ALL_LEVELS_DONE_WANT_CLEAR = "All levels done! Do you want to clear and start over?";
 	private static final String BUTTON_NO = "No";
 	private static final String BUTTON_YES = "Yes";
+	private static final String BUTTON_OK = "OK";
 	private static final String TITLE_WARNING = "Warning!";
+	private static final String TITLE_MESSAGE = "LodeRunner says:";
 	private static final String LABEL_VILAINS = "Enemies: %02d";
 	private static final String LABEL_COINS = "Coins: %02d/%02d";
 	private static final String LABEL_LIVES = "Lives: %d";
@@ -142,6 +146,8 @@ public class ViewManager {
 	private Button addButton(String text, int x, int y, int width, int heigth, boolean isActionButton, View.OnClickListener onClickListener) {
 		Button button = new Button(lodeRunnerActivity);
 		button.setText(text);
+		button.setTextColor(BRIGHT_GREEN);
+		button.setTypeface(Typeface.DEFAULT_BOLD);
 		button.setFocusable(false);
 		button.getBackground().setAlpha(128);
 		if (isActionButton) {
@@ -224,7 +230,7 @@ public class ViewManager {
 						doneTextView.setVisibility(levelInfo.isDone() ? View.VISIBLE : View.INVISIBLE);
 						doneTextView.setText(TEXT_DONE);
 						doneTextView.setTextSize(LodeRunnerStage.STAGE_HEIGHT_PIXELS / 2);
-						doneTextView.setTextColor(0xFF00FF00);
+						doneTextView.setTextColor(BRIGHT_GREEN);
 						doneTextView.invalidate();		
 						
 					}
@@ -236,15 +242,17 @@ public class ViewManager {
 			public void pauseRequest(final String message) {
 				lodeRunnerActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						if(message == null){
-							doneTextView.setVisibility(View.INVISIBLE);
-						}else{					
-							doneTextView.setText(message);
-							doneTextView.setTextSize(LodeRunnerStage.STAGE_HEIGHT_PIXELS / 4);
-							doneTextView.setVisibility(View.VISIBLE);
-						}
-						doneTextView.invalidate();
+
 						lodeRunnerActivity.onMenu();
+						if(message != null){
+							AlertDialog.Builder builder = new AlertDialog.Builder(lodeRunnerActivity);
+							builder.setMessage(message).setTitle(TITLE_MESSAGE);		
+							builder.setPositiveButton(BUTTON_OK, new DialogInterface.OnClickListener() {
+						           public void onClick(DialogInterface dialog, int id) {
+						           }
+						       });	
+							builder.show();
+						}						
 					};
 				});	
 			};
